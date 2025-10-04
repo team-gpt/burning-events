@@ -37,6 +37,7 @@ export const AREA_CENTER_COORDINATES: Record<SanFranciscoArea, Coordinates> = {
   'visitacion-valley': { lat: 37.7178, lng: -122.4039 }, // Visitacion Valley
   'bayview': { lat: 37.7312, lng: -122.3826 }, // Bayview
   'hunters-point': { lat: 37.7312, lng: -122.3826 }, // Hunters Point (overlaps with Bayview)
+  'embarcadero': { lat: 37.7955, lng: -122.3937 }, // Embarcadero
 } as const;
 
 /**

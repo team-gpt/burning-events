@@ -38,7 +38,7 @@ import { Button } from "~/components/ui/button";
 import { Badge } from "~/components/ui/badge";
 import { cn } from "~/lib/utils";
 import type { Event, LocationFilter } from "~/types/events";
-import { getAreaDisplayName } from "~/types/events";
+import { getAreaDisplayName, isSanFranciscoArea } from "~/types/events";
 
 /**
  * Props for the MapEventsList component
@@ -103,16 +103,44 @@ const FilterSummary = React.memo(function FilterSummary({
   totalCount, 
   onClearFilter 
 }: FilterSummaryProps) {
+  // Helper function to safely get area display name
+  const getSafeAreaDisplayName = (area: any): string => {
+    if (typeof area !== 'string') {
+      return 'Unknown area';
+    }
+    
+    // Check if it's a valid SanFranciscoArea type
+    if (isSanFranciscoArea(area)) {
+      return getAreaDisplayName(area);
+    }
+    
+    // If not, try to normalize it (convert to lowercase and replace spaces with hyphens)
+    const normalizedArea = area.toLowerCase().replace(/\s+/g, '-');
+    if (isSanFranciscoArea(normalizedArea)) {
+      return getAreaDisplayName(normalizedArea);
+    }
+    
+    // If all else fails, return the original area name with proper capitalization
+    return area.charAt(0).toUpperCase() + area.slice(1).toLowerCase();
+  };
+
   const getFilterDescription = React.useMemo(() => {
     if (locationFilter.areas && locationFilter.areas.length > 0) {
-      if (locationFilter.areas.length === 1) {
-        const area = locationFilter.areas[0];
-        return area ? `Events in ${getAreaDisplayName(area)}` : "Events in selected area";
-      } else if (locationFilter.areas.length <= 3) {
-        const areaNames = locationFilter.areas.map(area => area ? getAreaDisplayName(area) : "Unknown area");
+      // Filter out null/undefined areas
+      const validAreas = locationFilter.areas.filter(area => area != null);
+      
+      if (validAreas.length === 0) {
+        return "Events in selected areas";
+      }
+      
+      if (validAreas.length === 1) {
+        const area = validAreas[0]!;
+        return `Events in ${getSafeAreaDisplayName(area)}`;
+      } else if (validAreas.length <= 3) {
+        const areaNames = validAreas.map(area => getSafeAreaDisplayName(area));
         return `Events in ${areaNames.slice(0, -1).join(", ")} and ${areaNames[areaNames.length - 1]}`;
       } else {
-        return `Events in ${locationFilter.areas.length} areas`;
+        return `Events in ${validAreas.length} areas`;
       }
     }
     
@@ -171,11 +199,39 @@ const MapEmptyState = React.memo(function MapEmptyState({
   onClearFilter?: () => void;
   className?: string;
 }) {
+  // Helper function to safely get area display name
+  const getSafeAreaDisplayName = React.useCallback((area: any): string => {
+    if (typeof area !== 'string') {
+      return 'Unknown area';
+    }
+    
+    // Check if it's a valid SanFranciscoArea type
+    if (isSanFranciscoArea(area)) {
+      return getAreaDisplayName(area);
+    }
+    
+    // If not, try to normalize it (convert to lowercase and replace spaces with hyphens)
+    const normalizedArea = area.toLowerCase().replace(/\s+/g, '-');
+    if (isSanFranciscoArea(normalizedArea)) {
+      return getAreaDisplayName(normalizedArea);
+    }
+    
+    // If all else fails, return the original area name with proper capitalization
+    return area.charAt(0).toUpperCase() + area.slice(1).toLowerCase();
+  }, []);
+
   const message = React.useMemo(() => {
     if (locationFilter?.areas && locationFilter.areas.length > 0) {
-      if (locationFilter.areas.length === 1) {
-        const area = locationFilter.areas[0];
-        return area ? `No events found in ${getAreaDisplayName(area)}.` : "No events found in the selected area.";
+      // Filter out null/undefined areas
+      const validAreas = locationFilter.areas.filter(area => area != null);
+      
+      if (validAreas.length === 0) {
+        return "No events found in the selected areas.";
+      }
+      
+      if (validAreas.length === 1) {
+        const area = validAreas[0]!;
+        return `No events found in ${getSafeAreaDisplayName(area)}.`;
       }
       return "No events found in the selected areas.";
     }
@@ -185,7 +241,7 @@ const MapEmptyState = React.memo(function MapEmptyState({
     }
     
     return "No events match the current location filter.";
-  }, [locationFilter]);
+  }, [locationFilter, getSafeAreaDisplayName]);
 
   return (
     <motion.div 

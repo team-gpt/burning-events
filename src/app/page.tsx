@@ -1,17 +1,13 @@
 "use client";
 
-import { useState } from "react";
 import { Calendar, Sparkles } from "lucide-react";
-import { EventsTimeline } from "~/components/events/EventsTimeline";
 import { FilterControls } from "~/components/events/FilterControls";
 import { EventMap } from "~/components/events/EventMap";
 import { MapEventsList } from "~/components/events/MapEventsList";
-import { ViewToggle, type ViewType } from "~/components/events/ViewToggle";
 import { useEventFilters } from "~/hooks/useEventFilters";
 import { api } from "~/trpc/react";
 
 export default function Home() {
-  const [currentView, setCurrentView] = useState<ViewType>("list");
 
   // Fetch all events from the database
   const { data: allEvents = [], isLoading } = api.events.getAll.useQuery();
@@ -72,10 +68,6 @@ export default function Home() {
           </p>
         </div>
 
-        {/* View Toggle */}
-        <div className="mb-6">
-          <ViewToggle currentView={currentView} onViewChange={setCurrentView} />
-        </div>
 
         {/* Filters */}
         <div className="mb-8">
@@ -88,42 +80,34 @@ export default function Home() {
           />
         </div>
 
-        {/* Events Content - List or Map View */}
-        {currentView === "list" ? (
-          <EventsTimeline
-            events={filteredEvents}
-            isLoading={isLoading}
-            isPastEvents={filters.type === "past"}
-          />
-        ) : (
-          <div className="space-y-8">
-            {/* Map */}
-            <div className="overflow-hidden rounded-lg border border-neutral-200 bg-white shadow-sm">
-              <EventMap
-                events={allEvents}
-                onLocationFilter={setLocationFilter}
-                selectedLocations={
-                  filters.location ? [filters.location] : undefined
-                }
-                onToggleArea={toggleAreaSelection}
-                onToggleCoordinates={toggleCoordinateSelection}
-                currentLocationFilter={filters.location}
-                timeFilter={filters.type}
-                categoryFilter={filters.category}
-                className="h-96 md:h-[500px]"
-              />
-            </div>
-
-            {/* Filtered Events Below Map */}
-            <MapEventsList
-              events={filteredEvents}
-              locationFilter={filters.location}
-              totalEventCount={allEvents.length}
-              onClearLocationFilter={clearLocationFilter}
-              isLoading={isLoading}
+        {/* Map and Events Content */}
+        <div className="space-y-8">
+          {/* Map */}
+          <div className="overflow-hidden rounded-lg border border-neutral-200 bg-white shadow-sm">
+            <EventMap
+              events={allEvents}
+              onLocationFilter={setLocationFilter}
+              selectedLocations={
+                filters.location ? [filters.location] : undefined
+              }
+              onToggleArea={toggleAreaSelection}
+              onToggleCoordinates={toggleCoordinateSelection}
+              currentLocationFilter={filters.location}
+              timeFilter={filters.type}
+              categoryFilter={filters.category}
+              className="h-64 md:h-80"
             />
           </div>
-        )}
+
+          {/* Events List Below Map */}
+          <MapEventsList
+            events={filteredEvents}
+            locationFilter={filters.location}
+            totalEventCount={allEvents.length}
+            onClearLocationFilter={clearLocationFilter}
+            isLoading={isLoading}
+          />
+        </div>
       </div>
 
       {/* Footer */}

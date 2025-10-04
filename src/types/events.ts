@@ -84,7 +84,8 @@ export type SanFranciscoArea =
   | "excelsior" // Excelsior
   | "visitacion-valley" // Visitacion Valley
   | "bayview" // Bayview
-  | "hunters-point"; // Hunters Point
+  | "hunters-point" // Hunters Point
+  | "embarcadero"; // Embarcadero
 
 /**
  * Bounds for San Francisco area - useful for map viewport
@@ -207,6 +208,7 @@ export const AREA_DISPLAY_NAMES: Record<SanFranciscoArea, string> = {
   "visitacion-valley": "Visitacion Valley",
   bayview: "Bayview",
   "hunters-point": "Hunters Point",
+  embarcadero: "Embarcadero",
 } as const;
 
 /**
