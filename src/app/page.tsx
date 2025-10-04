@@ -121,7 +121,7 @@ export default function Home() {
             className="overflow-hidden rounded-lg border border-neutral-200 bg-white shadow-sm"
           >
             <EventMap
-              events={allEvents}
+              events={displayEvents}
               onLocationFilter={setLocationFilter}
               selectedLocations={
                 filters.location ? [filters.location] : undefined
