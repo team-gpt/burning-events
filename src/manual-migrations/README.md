@@ -176,3 +176,60 @@ pnpm tsx src/manual-migrations/search-by-embedding-example.ts
 ```
 
 The search uses cosine similarity to find events with descriptions semantically similar to your query.
+
+---
+
+# TRPC Search Endpoint
+
+## searchWithEmbeddings Endpoint
+
+A new TRPC endpoint has been added to search events using both text search and semantic embeddings search.
+
+### Endpoint Details
+
+- **Endpoint**: `events.searchWithEmbeddings`
+- **Input**: `{ prompt: string }` - A search query
+- **Output**: Array of Event objects
+
+### Features
+
+1. **Text Search**: Searches for the prompt in event titles and descriptions using case-insensitive substring matching
+2. **Semantic Search**: Converts the prompt to embeddings using OpenAI's text-embedding-3-large model and finds similar events using cosine similarity
+3. **Combined Results**: Deduplicates and returns results from both search methods
+4. **Fallback**: If embeddings search fails (e.g., OpenAI API key not set), falls back to text-only search
+
+### Requirements
+
+- **OPENAI_API_KEY** environment variable must be set for embeddings search to work
+- Events must have embeddings populated (use `populate-embeddings.ts` script)
+
+### Testing the Endpoint
+
+A test script is provided to test the endpoint:
+
+```bash
+pnpm tsx src/manual-migrations/test-search-endpoint.ts
+```
+
+This will run several test searches and display the results.
+
+### Example Usage in Code
+
+```typescript
+// Using the TRPC client
+const results = await trpc.events.searchWithEmbeddings.query({
+  prompt: "AI and machine learning meetups",
+});
+
+// Results will include events that:
+// - Have "AI" or "machine learning" in their title/description
+// - Have semantic similarity to the prompt based on their embeddings
+```
+
+### How It Works
+
+1. **Parallel Processing**: Text search and embedding generation happen in parallel for better performance
+2. **Vector Search**: Uses pgvector's cosine distance operator (`<=>`) to find similar events
+3. **Result Limit**: Returns up to 20 events from vector search, combined with all text matches
+4. **Deduplication**: Events found by both methods appear only once in results
+5. **Error Handling**: Gracefully falls back to text-only search if embeddings fail

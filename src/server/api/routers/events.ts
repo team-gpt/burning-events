@@ -21,7 +21,7 @@ export const eventsRouter = createTRPCRouter({
         area: z.string().optional(),
         limit: z.number().min(1).max(100).optional(),
         offset: z.number().min(0).optional(),
-      })
+      }),
     )
     .query(async ({ input }) => {
       return EventsService.getFilteredEvents({
@@ -40,7 +40,7 @@ export const eventsRouter = createTRPCRouter({
     .input(
       z.object({
         limit: z.number().min(1).max(100).optional(),
-      })
+      }),
     )
     .query(async ({ input }) => {
       return EventsService.getUpcomingEvents(input.limit);
@@ -53,7 +53,7 @@ export const eventsRouter = createTRPCRouter({
     .input(
       z.object({
         limit: z.number().min(1).max(100).optional(),
-      })
+      }),
     )
     .query(async ({ input }) => {
       return EventsService.getPastEvents(input.limit);
@@ -101,12 +101,21 @@ export const eventsRouter = createTRPCRouter({
       z.object({
         upcoming: z.boolean().optional(),
         area: z.string().optional(),
-      })
+      }),
     )
     .query(async ({ input }) => {
       return EventsService.getEventCount({
         upcoming: input.upcoming,
         area: input.area,
       });
+    }),
+
+  /**
+   * Search events with embeddings (combined text and vector search)
+   */
+  searchWithEmbeddings: publicProcedure
+    .input(z.object({ prompt: z.string().min(1) }))
+    .query(async ({ input }) => {
+      return EventsService.searchWithEmbeddings(input.prompt);
     }),
 });
