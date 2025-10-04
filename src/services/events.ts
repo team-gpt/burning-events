@@ -368,23 +368,28 @@ export class EventsService {
    */
   static async searchWithEmbeddings(prompt: string): Promise<Event[]> {
     try {
-      // Perform text search in parallel with embedding generation
-      const textSearchPromise = db.event.findMany({
+      // Perform title and description searches separately in parallel with embedding generation
+      const titleSearchPromise = db.event.findMany({
         where: {
-          OR: [
-            {
-              title: {
-                contains: prompt,
-                mode: "insensitive",
-              },
-            },
-            {
-              description: {
-                contains: prompt,
-                mode: "insensitive",
-              },
-            },
-          ],
+          title: {
+            contains: prompt,
+            mode: "insensitive",
+          },
+        },
+        include: {
+          organizers: true,
+        },
+        orderBy: {
+          startDate: "asc",
+        },
+      });
+
+      const descriptionSearchPromise = db.event.findMany({
+        where: {
+          description: {
+            contains: prompt,
+            mode: "insensitive",
+          },
         },
         include: {
           organizers: true,
@@ -402,11 +407,13 @@ export class EventsService {
         dimensions: 1536,
       });
 
-      // Wait for both operations to complete
-      const [textSearchResults, embeddingResponse] = await Promise.all([
-        textSearchPromise,
-        embeddingPromise,
-      ]);
+      // Wait for all operations to complete
+      const [titleSearchResults, descriptionSearchResults, embeddingResponse] =
+        await Promise.all([
+          titleSearchPromise,
+          descriptionSearchPromise,
+          embeddingPromise,
+        ]);
 
       // Perform vector similarity search if embedding was generated successfully
       let vectorSearchResults: EventWithOrganizers[] = [];
@@ -418,7 +425,18 @@ export class EventsService {
         // Search for similar events using cosine similarity
         const similarEvents = await db.$queryRaw<EventWithOrganizers[]>`
           SELECT 
-            e.*,
+            e.id,
+            e.title,
+            e.description,
+            e.start_date as "startDate",
+            e.end_date as "endDate",
+            e.image,
+            e.venue_name as "venueName",
+            e.address,
+            e.area,
+            e.url,
+            e."createdAt",
+            e."updatedAt",
             1 - (e.embeddings <=> ${vectorString}::vector) as similarity
           FROM "Event" e
           WHERE e.embeddings IS NOT NULL
@@ -452,15 +470,22 @@ export class EventsService {
         }));
       }
 
-      // Combine and deduplicate results
+      // Combine and deduplicate results in priority order
       const combinedResults = new Map<string, EventWithOrganizers>();
 
-      // Add text search results first (they are exact matches)
-      textSearchResults.forEach((event) => {
+      // 1. Add title matches first (highest priority)
+      titleSearchResults.forEach((event) => {
         combinedResults.set(event.id, event);
       });
 
-      // Add vector search results (similarity-based)
+      // 2. Add description matches second (medium priority)
+      descriptionSearchResults.forEach((event) => {
+        if (!combinedResults.has(event.id)) {
+          combinedResults.set(event.id, event);
+        }
+      });
+
+      // 3. Add vector search results third (similarity-based, lowest priority)
       vectorSearchResults.forEach((event) => {
         if (!combinedResults.has(event.id)) {
           combinedResults.set(event.id, event);
@@ -474,32 +499,55 @@ export class EventsService {
       console.error("Error in searchWithEmbeddings:", error);
 
       // Fallback to text-only search if embeddings search fails
-      const textSearchResults = await db.event.findMany({
-        where: {
-          OR: [
-            {
-              title: {
-                contains: prompt,
-                mode: "insensitive",
-              },
+      const [titleResults, descriptionResults] = await Promise.all([
+        db.event.findMany({
+          where: {
+            title: {
+              contains: prompt,
+              mode: "insensitive",
             },
-            {
-              description: {
-                contains: prompt,
-                mode: "insensitive",
-              },
+          },
+          include: {
+            organizers: true,
+          },
+          orderBy: {
+            startDate: "asc",
+          },
+        }),
+        db.event.findMany({
+          where: {
+            description: {
+              contains: prompt,
+              mode: "insensitive",
             },
-          ],
-        },
-        include: {
-          organizers: true,
-        },
-        orderBy: {
-          startDate: "asc",
-        },
+          },
+          include: {
+            organizers: true,
+          },
+          orderBy: {
+            startDate: "asc",
+          },
+        }),
+      ]);
+
+      // Combine results with proper priority
+      const fallbackResults = new Map<string, EventWithOrganizers>();
+
+      // Title matches first
+      titleResults.forEach((event) => {
+        fallbackResults.set(event.id, event);
       });
 
-      return textSearchResults.map(convertPrismaEventToEvent);
+      // Description matches second
+      descriptionResults.forEach((event) => {
+        if (!fallbackResults.has(event.id)) {
+          fallbackResults.set(event.id, event);
+        }
+      });
+
+      return Array.from(fallbackResults.values()).map(
+        convertPrismaEventToEvent,
+      );
     }
   }
 }

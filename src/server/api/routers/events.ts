@@ -135,66 +135,65 @@ export const eventsRouter = createTRPCRouter({
    * Search events using AI-generated keywords with embeddings
    */
   searchWithAI: publicProcedure
-    .input(z.object({ 
-      prompt: z.string().min(1),
-      currentFilters: z.object({
-        type: z.enum(["upcoming", "past", "all"]).optional(),
-        category: z.string().optional(),
-        area: z.string().optional(),
-      }).optional(),
-    }))
+    .input(
+      z.object({
+        prompt: z.string().min(1),
+        currentFilters: z
+          .object({
+            type: z.enum(["upcoming", "past", "all"]).optional(),
+            category: z.string().optional(),
+            area: z.string().optional(),
+          })
+          .optional(),
+      }),
+    )
     .mutation(async ({ input }) => {
       try {
         // Extract keywords using AI
         const aiKeywords = await extractSearchKeywords(input.prompt);
-        
+
         // Combine keywords into a single search string
         const searchQuery = combineKeywords(aiKeywords.keywords);
-        
+
         // Search events using the combined keywords
         let events = await EventsService.searchWithEmbeddings(searchQuery);
-        
+
         // Apply additional filters based on AI suggestions and current filters
         const now = new Date();
-        
+
         // Determine time filter
         let timeFilter = input.currentFilters?.type;
-        if (aiKeywords.suggestedTimeFilter && !timeFilter) {
-          timeFilter = aiKeywords.suggestedTimeFilter;
-        }
-        
+
         // Apply time filtering
         if (timeFilter === "upcoming") {
-          events = events.filter(event => new Date(event.date) >= now);
+          events = events.filter((event) => new Date(event.date) >= now);
         } else if (timeFilter === "past") {
-          events = events.filter(event => new Date(event.date) < now);
+          events = events.filter((event) => new Date(event.date) < now);
         }
-        
+
         // Apply area filtering
-        const areaFilter = input.currentFilters?.area || aiKeywords.suggestedArea;
+        const areaFilter = input.currentFilters?.area;
         if (areaFilter && areaFilter !== "all") {
-          events = events.filter(event => event.area === areaFilter);
+          events = events.filter((event) => event.area === areaFilter);
         }
-        
+
         // Apply category filtering
         const categoryFilter = input.currentFilters?.category;
         if (categoryFilter && categoryFilter !== "all") {
-          events = events.filter(event => event.category === categoryFilter);
+          events = events.filter((event) => event.category === categoryFilter);
         }
-        
+
         return {
           events,
           aiKeywords: aiKeywords.keywords,
-          suggestedArea: aiKeywords.suggestedArea,
-          suggestedTimeFilter: aiKeywords.suggestedTimeFilter,
           searchQuery,
         };
       } catch (error) {
         console.error("Error in AI search:", error);
-        
+
         // Fallback to regular embedding search
         const events = await EventsService.searchWithEmbeddings(input.prompt);
-        
+
         return {
           events,
           aiKeywords: [input.prompt],

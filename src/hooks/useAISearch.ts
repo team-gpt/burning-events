@@ -7,8 +7,6 @@ import type { Event, EventFilters } from "~/types/events";
 interface AISearchResult {
   events: Event[];
   aiKeywords: string[];
-  suggestedArea?: string;
-  suggestedTimeFilter?: "upcoming" | "past";
   searchQuery: string;
 }
 
@@ -43,12 +41,10 @@ export function useAISearch({
       const aiResult: AISearchResult = {
         events: result.events,
         aiKeywords: result.aiKeywords,
-        suggestedArea: result.suggestedArea,
-        suggestedTimeFilter: result.suggestedTimeFilter,
         searchQuery: result.searchQuery,
       };
 
-      setSearchState(prev => ({
+      setSearchState((prev) => ({
         ...prev,
         isSearching: false,
         error: null,
@@ -58,9 +54,10 @@ export function useAISearch({
       onSearchComplete?.(aiResult);
     },
     onError: (error) => {
-      const errorMessage = error.message || "Failed to search events. Please try again.";
-      
-      setSearchState(prev => ({
+      const errorMessage =
+        error.message || "Failed to search events. Please try again.";
+
+      setSearchState((prev) => ({
         ...prev,
         isSearching: false,
         error: errorMessage,
@@ -78,7 +75,7 @@ export function useAISearch({
 
       const trimmedQuery = query.trim();
 
-      setSearchState(prev => ({
+      setSearchState((prev) => ({
         ...prev,
         isSearching: true,
         error: null,
@@ -88,7 +85,10 @@ export function useAISearch({
       // Prepare current filters for the API call
       const filters = {
         type: currentFilters?.type,
-        category: currentFilters?.category === "all" ? undefined : currentFilters?.category,
+        category:
+          currentFilters?.category === "all"
+            ? undefined
+            : currentFilters?.category,
         area: currentFilters?.location?.areas?.[0], // Use first area if multiple selected
       };
 
@@ -97,7 +97,7 @@ export function useAISearch({
         currentFilters: filters,
       });
     },
-    [searchWithAI, currentFilters]
+    [searchWithAI, currentFilters],
   );
 
   const clearSearch = useCallback(() => {
@@ -110,14 +110,16 @@ export function useAISearch({
   }, []);
 
   const clearError = useCallback(() => {
-    setSearchState(prev => ({
+    setSearchState((prev) => ({
       ...prev,
       error: null,
     }));
   }, []);
 
   // Helper to check if there's an active search
-  const hasActiveSearch = Boolean(searchState.lastQuery && searchState.lastResult);
+  const hasActiveSearch = Boolean(
+    searchState.lastQuery && searchState.lastResult,
+  );
 
   // Helper to get search result events
   const searchResultEvents = searchState.lastResult?.events || [];
@@ -138,8 +140,6 @@ export function useAISearch({
 
     // Additional info
     aiKeywords: searchState.lastResult?.aiKeywords || [],
-    suggestedArea: searchState.lastResult?.suggestedArea,
-    suggestedTimeFilter: searchState.lastResult?.suggestedTimeFilter,
     searchQuery: searchState.lastResult?.searchQuery,
   };
 }

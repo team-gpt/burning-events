@@ -3,9 +3,11 @@ import { z } from "zod";
 
 // Define the schema for AI response
 const AISearchKeywordsSchema = z.object({
-  keywords: z.array(z.string()).describe("Array of relevant keywords extracted from the user query for event search"),
-  suggestedArea: z.string().optional().describe("Optional area filter if the user mentions a specific location (e.g. 'SOMA', 'Mission Bay', 'Financial District')"),
-  suggestedTimeFilter: z.enum(["upcoming", "past"]).optional().describe("Optional time filter if the user implies past or future events"),
+  keywords: z
+    .array(z.string())
+    .describe(
+      "Array of relevant keywords extracted from the user query for event search",
+    ),
 });
 
 export type AISearchKeywords = z.infer<typeof AISearchKeywordsSchema>;
@@ -28,10 +30,12 @@ function getOpenAIClient(): OpenAI {
 /**
  * Extract search keywords from a natural language query using OpenAI
  */
-export async function extractSearchKeywords(prompt: string): Promise<AISearchKeywords> {
+export async function extractSearchKeywords(
+  prompt: string,
+): Promise<AISearchKeywords> {
   try {
     const openai = getOpenAIClient();
-    
+
     const response = await openai.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [
@@ -46,19 +50,19 @@ export async function extractSearchKeywords(prompt: string): Promise<AISearchKey
           
           Example queries and responses:
           - "AI events for founders" → keywords: ["AI", "artificial intelligence", "founders", "startup", "entrepreneurship"]
-          - "networking events in SOMA" → keywords: ["networking", "professional"], suggestedArea: "SOMA"
-          - "past blockchain conferences" → keywords: ["blockchain", "crypto", "conference"], suggestedTimeFilter: "past"
+          - "networking events in SOMA" → keywords: ["networking", "professional"],
+          - "past blockchain conferences" → keywords: ["blockchain", "crypto", "conference"]
           
           Be comprehensive with keywords to improve search results. Include synonyms and related terms.
           
           San Francisco areas you can suggest: SOMA, Mission Bay, Financial District, Castro, Mission, Sunset, Richmond, Presidio, Pacific Heights, Nob Hill, Russian Hill, North Beach, Chinatown, Hayes Valley, Tenderloin, Potrero Hill, Dogpatch, Embarcadero
           
-          Respond with a JSON object matching the required schema.`
+          Respond with a JSON object matching the required schema.`,
         },
         {
           role: "user",
-          content: prompt
-        }
+          content: prompt,
+        },
       ],
       response_format: {
         type: "json_schema",
@@ -70,22 +74,14 @@ export async function extractSearchKeywords(prompt: string): Promise<AISearchKey
               keywords: {
                 type: "array",
                 items: { type: "string" },
-                description: "Array of relevant keywords extracted from the user query for event search"
+                description:
+                  "Array of relevant keywords extracted from the user query for event search",
               },
-              suggestedArea: {
-                type: "string",
-                description: "Optional area filter if the user mentions a specific location"
-              },
-              suggestedTimeFilter: {
-                type: "string",
-                enum: ["upcoming", "past"],
-                description: "Optional time filter if the user implies past or future events"
-              }
             },
             required: ["keywords"],
-            additionalProperties: false
-          }
-        }
+            additionalProperties: false,
+          },
+        },
       },
       temperature: 0.3,
     });
@@ -105,10 +101,9 @@ export async function extractSearchKeywords(prompt: string): Promise<AISearchKey
         keywords: [prompt],
       };
     }
-
   } catch (error) {
     console.error("Error extracting search keywords:", error);
-    
+
     // Fallback: return the original prompt as a keyword
     return {
       keywords: [prompt],
