@@ -8,13 +8,19 @@ import { EventMap } from "~/components/events/EventMap";
 import { MapEventsList } from "~/components/events/MapEventsList";
 import { ViewToggle, type ViewType } from "~/components/events/ViewToggle";
 import { useEventFilters } from "~/hooks/useEventFilters";
-import { dummyEvents, getAllCategories } from "~/data/events";
+import { api } from "~/trpc/react";
 
 export default function Home() {
-  const [isLoading] = useState(false);
-  const [currentView, setCurrentView] = useState<ViewType>('list');
-  const categories = getAllCategories();
-  
+  const [currentView, setCurrentView] = useState<ViewType>("list");
+
+  // Fetch all events from the database
+  const { data: allEvents = [], isLoading } = api.events.getAll.useQuery();
+
+  // Get unique categories from the fetched events
+  const categories = Array.from(
+    new Set(allEvents.map((event) => event.category)),
+  );
+
   const {
     filters,
     filteredEvents,
@@ -25,27 +31,27 @@ export default function Home() {
     toggleAreaSelection,
     toggleCoordinateSelection,
   } = useEventFilters({
-    events: dummyEvents,
-    initialFilters: { type: "upcoming", category: "all" }
+    events: allEvents,
+    initialFilters: { type: "upcoming", category: "all" },
   });
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-neutral-50 via-white to-neutral-100">
       {/* Header */}
-      <header className="bg-white border-b border-neutral-200 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
+      <header className="border-b border-neutral-200 bg-white shadow-sm">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="flex h-16 items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                <Sparkles className="w-4 h-4 text-white" />
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-r from-blue-600 to-purple-600">
+                <Sparkles className="h-4 w-4 text-white" />
               </div>
               <h1 className="text-xl font-bold text-neutral-900">
                 Burning Events
               </h1>
             </div>
-            
+
             <div className="flex items-center gap-2 text-sm text-neutral-600">
-              <Calendar className="w-4 h-4" />
+              <Calendar className="h-4 w-4" />
               <span>{filteredEvents.length} events found</span>
             </div>
           </div>
@@ -53,24 +59,22 @@ export default function Home() {
       </header>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         {/* Page Title & Description */}
         <div className="mb-8">
-          <h2 className="text-3xl font-bold text-neutral-900 mb-2">
+          <h2 className="mb-2 text-3xl font-bold text-neutral-900">
             Discover Amazing Events
           </h2>
-          <p className="text-lg text-neutral-600 max-w-2xl">
-            Explore upcoming conferences, workshops, meetups, and networking events. 
-            Find your next great learning experience or professional opportunity.
+          <p className="max-w-2xl text-lg text-neutral-600">
+            Explore upcoming conferences, workshops, meetups, and networking
+            events. Find your next great learning experience or professional
+            opportunity.
           </p>
         </div>
 
         {/* View Toggle */}
         <div className="mb-6">
-          <ViewToggle
-            currentView={currentView}
-            onViewChange={setCurrentView}
-          />
+          <ViewToggle currentView={currentView} onViewChange={setCurrentView} />
         </div>
 
         {/* Filters */}
@@ -85,7 +89,7 @@ export default function Home() {
         </div>
 
         {/* Events Content - List or Map View */}
-        {currentView === 'list' ? (
+        {currentView === "list" ? (
           <EventsTimeline
             events={filteredEvents}
             isLoading={isLoading}
@@ -94,23 +98,25 @@ export default function Home() {
         ) : (
           <div className="space-y-8">
             {/* Map */}
-            <div className="bg-white rounded-lg shadow-sm border border-neutral-200 overflow-hidden">
+            <div className="overflow-hidden rounded-lg border border-neutral-200 bg-white shadow-sm">
               <EventMap
-                events={dummyEvents}
+                events={allEvents}
                 onLocationFilter={setLocationFilter}
-                selectedLocations={filters.location ? [filters.location] : undefined}
+                selectedLocations={
+                  filters.location ? [filters.location] : undefined
+                }
                 onToggleArea={toggleAreaSelection}
                 onToggleCoordinates={toggleCoordinateSelection}
                 currentLocationFilter={filters.location}
                 className="h-96 md:h-[500px]"
               />
             </div>
-            
+
             {/* Filtered Events Below Map */}
             <MapEventsList
               events={filteredEvents}
               locationFilter={filters.location}
-              totalEventCount={dummyEvents.length}
+              totalEventCount={allEvents.length}
               onClearLocationFilter={clearLocationFilter}
               isLoading={isLoading}
             />
@@ -119,8 +125,8 @@ export default function Home() {
       </div>
 
       {/* Footer */}
-      <footer className="bg-white border-t border-neutral-200 mt-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <footer className="mt-16 border-t border-neutral-200 bg-white">
+        <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
           <div className="text-center text-sm text-neutral-500">
             <p>Built with Next.js, TypeScript, and Tailwind CSS</p>
             <p className="mt-1">Discover your next amazing event experience</p>
