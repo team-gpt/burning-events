@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Search, ArrowUp, Loader2 } from "lucide-react";
+import { Search, ArrowUp, Loader2, Calendar } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import { Toggle } from "~/components/ui/toggle";
 import { DatePicker } from "~/components/ui/date-picker";
@@ -15,13 +15,8 @@ interface AISearchInputProps {
   placeholder?: string;
   className?: string;
   // Filter props
-  selectedFilter: FilterType;
-  selectedCategory?: EventCategory | "all";
   selectedDate?: Date;
-  onFilterChange: (filter: FilterType) => void;
-  onCategoryChange?: (category: EventCategory | "all") => void;
   onDateChange: (date: Date | undefined) => void;
-  categories?: EventCategory[];
 }
 
 export function AISearchInput({
@@ -30,9 +25,7 @@ export function AISearchInput({
   error = null,
   placeholder = "Ask me about events... (e.g., 'AI events for founders')",
   className,
-  selectedFilter,
   selectedDate,
-  onFilterChange,
   onDateChange,
 }: AISearchInputProps) {
   const [query, setQuery] = useState("");
@@ -116,6 +109,60 @@ export function AISearchInput({
                 )}
               </Button>
             </div>
+          </div>
+          <div className="flex items-center gap-3 border-t border-neutral-100 p-6 pt-4">
+            {/* Food Toggle with Coming Soon Badge */}
+            <div className="relative">
+              <Toggle
+                pressed={false}
+                disabled={true}
+                className={cn(
+                  "h-7 rounded-md px-3 py-1 text-xs font-medium transition-all",
+                  "opacity-50 pointer-events-none cursor-not-allowed",
+                  "border border-neutral-200 bg-neutral-100 text-neutral-500"
+                )}
+              >
+                Food
+              </Toggle>
+              <div className="absolute -top-2 -right-2 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 px-1.5 py-0.5 text-[10px] font-semibold text-white shadow-sm">
+                Soon
+              </div>
+            </div>
+
+            {/* Is Paid Toggle (Disabled) */}
+            <Toggle
+              pressed={false}
+              disabled={true}
+              className={cn(
+                "h-7 rounded-md px-3 py-1 text-xs font-medium transition-all",
+                "opacity-50 pointer-events-none cursor-not-allowed",
+                "border border-neutral-200 bg-neutral-100 text-neutral-500"
+              )}
+            >
+              Is Paid
+            </Toggle>
+
+            {/* Keynotes Toggle (Disabled) */}
+            <Toggle
+              pressed={false}
+              disabled={true}
+              className={cn(
+                "h-7 rounded-md px-3 py-1 text-xs font-medium transition-all",
+                "opacity-50 pointer-events-none cursor-not-allowed",
+                "border border-neutral-200 bg-neutral-100 text-neutral-500"
+              )}
+            >
+              Keynotes
+            </Toggle>
+
+            {/* Disabled Date Picker */}
+            <DatePicker
+              date={undefined}
+              onDateChange={undefined}
+              placeholder="Date"
+              className="h-7 text-xs opacity-50 pointer-events-none"
+              disabled={true}
+            />
           </div>
         </div>
       </form>
