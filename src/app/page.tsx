@@ -118,17 +118,6 @@ export default function Home() {
 
       {/* Main Content */}
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        {/* Page Title & Description */}
-        <div className="mb-8">
-          <h2 className="mb-2 text-3xl font-bold text-neutral-900">
-            Discover Amazing Events
-          </h2>
-          <p className="max-w-2xl text-lg text-neutral-600">
-            Explore upcoming conferences, workshops, meetups, and networking
-            events. Find your next great learning experience or professional
-            opportunity.
-          </p>
-        </div>
         {/* Filters */}
         <div className="mb-8">
           <FilterControls

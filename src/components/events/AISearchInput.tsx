@@ -52,13 +52,13 @@ export function AISearchInput({
       <form onSubmit={handleSubmit} className="relative">
         <div
           className={cn(
-            "relative flex items-end rounded-2xl border border-neutral-200 bg-white shadow-sm transition-all duration-200",
+            "relative flex items-center rounded-2xl border border-neutral-200 bg-white shadow-sm transition-all duration-200",
             "focus-within:border-neutral-300 focus-within:shadow-md",
             error && "border-red-200 focus-within:border-red-300"
           )}
         >
           {/* Search Icon */}
-          <div className="flex items-center pl-4 pb-3">
+          <div className="flex items-center pl-4">
             <Search className="h-5 w-5 text-neutral-400" />
           </div>
 
@@ -71,23 +71,24 @@ export function AISearchInput({
             placeholder={placeholder}
             disabled={isLoading}
             rows={1}
+            style={{ outline: 'none', boxShadow: 'none' }}
             className={cn(
               "flex-1 resize-none border-0 bg-transparent px-3 py-3 text-sm text-neutral-900 placeholder:text-neutral-500",
-              "focus:outline-none focus:ring-0",
+              "focus:outline-none focus:ring-0 focus:border-0 outline-none focus:shadow-none",
               "min-h-[2.5rem] max-h-32 overflow-y-auto",
               isLoading && "opacity-50"
             )}
           />
 
           {/* Submit Button */}
-          <div className="flex items-end p-2">
+          <div className="flex items-center p-2">
             <Button
               type="submit"
               size="icon"
               disabled={!query.trim() || isLoading}
               className={cn(
-                "h-8 w-8 rounded-lg bg-neutral-900 hover:bg-neutral-800",
-                "disabled:bg-neutral-300 disabled:hover:bg-neutral-300",
+                "h-8 w-8 rounded-lg bg-neutral-100 hover:bg-neutral-200 text-neutral-900",
+                "disabled:bg-neutral-300 disabled:hover:bg-neutral-300 disabled:text-neutral-500",
                 "transition-all duration-200"
               )}
             >
@@ -110,7 +111,7 @@ export function AISearchInput({
 
       {/* Helper Text */}
       <div className="mt-3 text-xs text-neutral-500 text-center">
-        Try queries like "networking events in SOMA" or "past AI conferences"
+        Try queries like "networking events in SOMA" or "AI founders events"
       </div>
     </div>
   );
