@@ -35,6 +35,7 @@ export interface EventFilters {
   type: FilterType;
   category: EventCategory | "all";
   location?: LocationFilter;
+  dateFilter?: Date;
 }
 
 export type GroupedEvents = Record<string, Event[]>;

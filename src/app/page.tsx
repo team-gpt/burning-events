@@ -1,6 +1,5 @@
 "use client";
 import { Calendar, Sparkles } from "lucide-react";
-import { FilterControls } from "~/components/events/FilterControls";
 import { EventMap } from "~/components/events/EventMap";
 import { MapEventsList } from "~/components/events/MapEventsList";
 import { AISearchInput } from "~/components/events/AISearchInput";
@@ -19,6 +18,7 @@ export default function Home() {
     filteredEvents,
     setTimeFilter,
     setCategoryFilter,
+    setDateFilter,
     setLocationFilter,
     clearLocationFilter,
     toggleAreaSelection,
@@ -42,7 +42,7 @@ export default function Home() {
       category: filters.category,
       location: filters.location,
     },
-    onSearchComplete: (result) => {
+    onSearchComplete: (_result) => {
       // Auto-scroll to map after search completes
       const mapElement = document.getElementById("events-map");
       if (mapElement) {
@@ -83,20 +83,18 @@ export default function Home() {
       <section className="border-b border-neutral-200 bg-white">
         <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
           <div className="flex flex-col items-center space-y-6">
-            <div className="text-center">
-              <h2 className="mb-2 text-2xl font-semibold text-neutral-900">
-                Ask AI about events
-              </h2>
-              <p className="max-w-2xl text-neutral-600">
-                Use natural language to find exactly what you're looking for
-              </p>
-            </div>
-
             <AISearchInput
               onSearch={performSearch}
               isLoading={isSearching}
               error={searchError}
               className="w-full max-w-3xl"
+              selectedFilter={filters.type}
+              selectedCategory={filters.category}
+              selectedDate={filters.dateFilter}
+              onFilterChange={setTimeFilter}
+              onCategoryChange={setCategoryFilter}
+              onDateChange={setDateFilter}
+              categories={categories}
             />
 
             {hasActiveSearch && (
@@ -118,16 +116,6 @@ export default function Home() {
 
       {/* Main Content */}
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        {/* Filters */}
-        <div className="mb-8">
-          <FilterControls
-            selectedFilter={filters.type}
-            selectedCategory={filters.category}
-            onFilterChange={setTimeFilter}
-            onCategoryChange={setCategoryFilter}
-            categories={categories}
-          />
-        </div>
         {/* Map and Events Content */}
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
           {/* Map */}

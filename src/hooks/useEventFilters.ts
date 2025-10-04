@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { filterEventsByTime } from "~/lib/date-utils";
+import { isSameDay } from "date-fns";
 import type {
   Event,
   EventCategory,
@@ -104,6 +105,7 @@ export function useEventFilters({
     type: initialFilters?.type ?? "upcoming",
     category: initialFilters?.category ?? "all",
     location: initialFilters?.location,
+    dateFilter: initialFilters?.dateFilter,
   });
 
   // Keep filteredEvents for backward compatibility, but it will be empty if no events are passed
@@ -120,6 +122,14 @@ export function useEventFilters({
       filtered = filtered.filter(
         (event) => event.category === filters.category,
       );
+    }
+
+    // Filter by date if date filter is set
+    if (filters.dateFilter) {
+      filtered = filtered.filter((event) => {
+        const eventDate = new Date(event.date);
+        return isSameDay(eventDate, filters.dateFilter!);
+      });
     }
 
     // Finally filter by location if location filter is set
@@ -140,6 +150,10 @@ export function useEventFilters({
 
   const setCategoryFilter = (category: EventCategory | "all") => {
     updateFilter({ category });
+  };
+
+  const setDateFilter = (dateFilter: Date | undefined) => {
+    updateFilter({ dateFilter });
   };
 
   const setLocationFilter = (locationFilter: LocationFilter | undefined) => {
@@ -218,6 +232,7 @@ export function useEventFilters({
       type: "upcoming",
       category: "all",
       location: undefined,
+      dateFilter: undefined,
     });
   };
 
@@ -227,6 +242,7 @@ export function useEventFilters({
     updateFilter,
     setTimeFilter,
     setCategoryFilter,
+    setDateFilter,
     setLocationFilter,
     clearLocationFilter,
     toggleAreaSelection,
