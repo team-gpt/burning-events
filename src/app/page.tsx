@@ -1,20 +1,20 @@
 "use client";
-
-<<<<<<< Updated upstream
-=======
-import { useState, useMemo } from "react";
->>>>>>> Stashed changes
 import { Calendar, Sparkles } from "lucide-react";
 import { FilterControls } from "~/components/events/FilterControls";
 import { EventMap } from "~/components/events/EventMap";
 import { MapEventsList } from "~/components/events/MapEventsList";
 import { useEventFilters } from "~/hooks/useEventFilters";
 import { api } from "~/trpc/react";
-
 export default function Home() {
-
+  // Fetch all events from the database
+  const { data: allEvents = [], isLoading } = api.events.getAll.useQuery();
+  // Get unique categories from the fetched events
+  const categories = Array.from(
+    new Set(allEvents.map((event) => event.category)),
+  );
   const {
     filters,
+    filteredEvents,
     setTimeFilter,
     setCategoryFilter,
     setLocationFilter,
@@ -22,35 +22,9 @@ export default function Home() {
     toggleAreaSelection,
     toggleCoordinateSelection,
   } = useEventFilters({
-    events: [], // We don't need to pass events anymore
+    events: allEvents,
     initialFilters: { type: "upcoming", category: "all" },
   });
-
-  // Build query parameters from filters
-  const queryParams = useMemo(() => ({
-    upcoming: filters.type === "upcoming" ? true : filters.type === "past" ? false : undefined,
-    category: filters.category === "all" ? undefined : filters.category,
-    areas: filters.location?.areas,
-    center: filters.location?.center,
-    radius: filters.location?.radius,
-    includeApproximate: filters.location?.includeApproximate ?? true,
-  }), [filters]);
-
-  // Fetch filtered events from the backend
-  const { data: filteredEvents = [], isLoading } = api.events.getFiltered.useQuery(queryParams);
-
-  // Fetch all events only for the map view (to show all markers)
-  const { data: allEvents = [] } = api.events.getAll.useQuery(undefined, {
-    // Only fetch when map view is active
-    enabled: currentView === "map",
-  });
-
-  // Get unique categories from the filtered events
-  const categories = useMemo(() => {
-    const eventsToUse = currentView === "map" ? allEvents : filteredEvents;
-    return Array.from(new Set(eventsToUse.map((event) => event.category)));
-  }, [allEvents, filteredEvents, currentView]);
-
   return (
     <main className="min-h-screen bg-gradient-to-br from-neutral-50 via-white to-neutral-100">
       {/* Header */}
@@ -65,7 +39,6 @@ export default function Home() {
                 Burning Events
               </h1>
             </div>
-
             <div className="flex items-center gap-2 text-sm text-neutral-600">
               <Calendar className="h-4 w-4" />
               <span>{filteredEvents.length} events found</span>
@@ -73,7 +46,6 @@ export default function Home() {
           </div>
         </div>
       </header>
-
       {/* Main Content */}
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         {/* Page Title & Description */}
@@ -87,8 +59,6 @@ export default function Home() {
             opportunity.
           </p>
         </div>
-
-
         {/* Filters */}
         <div className="mb-8">
           <FilterControls
@@ -99,7 +69,6 @@ export default function Home() {
             categories={categories}
           />
         </div>
-
         {/* Map and Events Content */}
         <div className="space-y-8">
           {/* Map */}
@@ -118,7 +87,6 @@ export default function Home() {
               className="h-64 md:h-80"
             />
           </div>
-
           {/* Events List Below Map */}
           <MapEventsList
             events={filteredEvents}
@@ -129,7 +97,6 @@ export default function Home() {
           />
         </div>
       </div>
-
       {/* Footer */}
       <footer className="mt-16 border-t border-neutral-200 bg-white">
         <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
