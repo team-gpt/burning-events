@@ -20,12 +20,12 @@ export interface Event {
   tags?: string[];
 }
 
-export type EventCategory = 
-  | "Conference" 
-  | "Workshop" 
-  | "Social" 
-  | "Networking" 
-  | "Meetup" 
+export type EventCategory =
+  | "Conference"
+  | "Workshop"
+  | "Social"
+  | "Networking"
+  | "Meetup"
   | "Webinar";
 
 export type FilterType = "upcoming" | "past";
@@ -39,6 +39,7 @@ export interface EventFilters {
 export type GroupedEvents = Record<string, Event[]>;
 
 export type DateCategory = "today" | "tomorrow" | "past" | "future";
+<<<<<<< Updated upstream
 
 // Location-related types
 export interface Coordinates {
@@ -277,3 +278,5 @@ export function createRadiusLocationFilter(
     includeApproximate,
   };
 }
+=======
+>>>>>>> Stashed changes

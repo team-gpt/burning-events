@@ -18,3 +18,43 @@ model Post {
 
     @@index([name])
 }
+
+model Event {
+    id          String      @id @default(cuid())
+    title       String
+    description String      @db.Text
+    startDate   DateTime    @map("start_date")
+    endDate     DateTime    @map("end_date")
+    image       String
+    venueName   String?     @map("venue_name")
+    address     String?
+    area        String?
+    createdAt   DateTime    @default(now())
+    updatedAt   DateTime    @updatedAt
+    url         String      @map("url")
+    organizers  Organizer[]
+
+
+    @@index([url])
+    @@index([title])
+    @@index([venueName])
+    @@index([address])
+    @@index([startDate])
+    @@index([area])
+}
+
+model Organizer {
+    id        String   @id @default(cuid())
+    name      String
+    type      String   // "Person" or "Organization"
+    url       String
+    eventId   String   @map("event_id")
+    event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@index([name])
+    @@index([type])
+    @@index([url])
+    @@index([eventId])
+}
