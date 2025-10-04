@@ -108,6 +108,8 @@ export default function Home() {
                 onToggleArea={toggleAreaSelection}
                 onToggleCoordinates={toggleCoordinateSelection}
                 currentLocationFilter={filters.location}
+                timeFilter={filters.type}
+                categoryFilter={filters.category}
                 className="h-96 md:h-[500px]"
               />
             </div>

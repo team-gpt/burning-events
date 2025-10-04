@@ -37,7 +37,7 @@ function calculateDistance(coord1: Coordinates, coord2: Coordinates): number {
  * @returns Filtered events
  */
 function filterEventsByLocation(events: Event[], locationFilter: LocationFilter): Event[] {
-  return events.filter(event => {
+  const filteredEvents = events.filter(event => {
     // If event has no location data and we're not including approximate, exclude it
     if (!event.coordinates && !event.area) {
       return false;
@@ -50,29 +50,33 @@ function filterEventsByLocation(events: Event[], locationFilter: LocationFilter)
       return false;
     }
 
-    // Filter by areas if specified
-    if (locationFilter.areas && locationFilter.areas.length > 0) {
-      if (event.area && locationFilter.areas.includes(event.area)) {
-        return true;
-      }
+    // Check if we have any location filters
+    const hasAreaFilter = locationFilter.areas && locationFilter.areas.length > 0;
+    const hasRadiusFilter = locationFilter.center && locationFilter.radius;
+
+    // If no location filters are set, include all events with location data
+    if (!hasAreaFilter && !hasRadiusFilter) {
+      return true;
     }
 
-    // Filter by radius if specified and event has exact coordinates
-    if (locationFilter.center && locationFilter.radius && event.coordinates) {
-      const distance = calculateDistance(locationFilter.center, event.coordinates);
-      if (distance <= locationFilter.radius) {
-        return true;
-      }
+    // Check if event matches area filter
+    let matchesAreaFilter = false;
+    if (hasAreaFilter && event.area) {
+      matchesAreaFilter = locationFilter.areas!.includes(event.area);
     }
 
-    // If no specific filters match but we have areas or radius filters, exclude
-    if (locationFilter.areas?.length || locationFilter.radius) {
-      return false;
+    // Check if event matches radius filter
+    let matchesRadiusFilter = false;
+    if (hasRadiusFilter && event.coordinates) {
+      const distance = calculateDistance(locationFilter.center!, event.coordinates);
+      matchesRadiusFilter = distance <= locationFilter.radius!;
     }
 
-    // If no specific location filters, include all events with location data
-    return true;
+    // Include event if it matches ANY of the active filters
+    return matchesAreaFilter || matchesRadiusFilter;
   });
+
+  return filteredEvents;
 }
 
 interface UseEventFiltersProps {

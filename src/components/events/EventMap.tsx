@@ -8,9 +8,10 @@ import { Badge } from "~/components/ui/badge";
 import { Card, CardContent } from "~/components/ui/card";
 import { getRelativeEventTime } from "~/lib/date-utils";
 import { useEventMarkers, type ClusteredMarker } from "~/hooks/useEventMarkers";
-import type { Event, LocationFilter, Coordinates, SanFranciscoArea } from "~/types/events";
+import type { Event, LocationFilter, Coordinates, SanFranciscoArea, FilterType, EventCategory } from "~/types/events";
 import { AREA_DISPLAY_NAMES } from "~/types/events";
 import { AREA_CENTER_COORDINATES } from "~/lib/area-coordinates";
+import { filterEventsByTime } from "~/lib/date-utils";
 
 // Import Leaflet styles
 import "~/styles/leaflet.css";
@@ -45,6 +46,9 @@ type EventMapProps = {
   onToggleArea?: (area: SanFranciscoArea) => void;
   onToggleCoordinates?: (coordinates: Coordinates, radius?: number) => void;
   currentLocationFilter?: LocationFilter;
+  // Filters to apply for counting events in bubbles (but still show all areas)
+  timeFilter?: FilterType;
+  categoryFilter?: EventCategory | "all";
 };
 
 
@@ -75,7 +79,9 @@ export function EventMap({
   className,
   onToggleArea,
   onToggleCoordinates,
-  currentLocationFilter
+  currentLocationFilter,
+  timeFilter = "upcoming",
+  categoryFilter = "all"
 }: EventMapProps) {
   const [isMapReady, setIsMapReady] = useState(false);
   const [mapError, setMapError] = useState<string | null>(null);
@@ -99,10 +105,21 @@ export function EventMap({
     }
   }, []);
 
-  // Create clustered markers from events with selection state
+  // Filter events based on time and category for displaying accurate counts
+  const filteredEventsForCounting = useMemo(() => {
+    let filtered = filterEventsByTime(events, timeFilter);
+    
+    if (categoryFilter !== "all") {
+      filtered = filtered.filter(event => event.category === categoryFilter);
+    }
+    
+    return filtered;
+  }, [events, timeFilter, categoryFilter]);
+
+  // Create clustered markers from filtered events with selection state
   const selectedAreas = currentLocationFilter?.areas || [];
   const selectedCoordinates = currentLocationFilter?.center;
-  const clusteredMarkers = useEventMarkers(events, 100, selectedAreas, selectedCoordinates);
+  const clusteredMarkers = useEventMarkers(filteredEventsForCounting, 100, selectedAreas, selectedCoordinates);
 
   // Handle marker click for toggle selection behavior
   const handleMarkerClick = useCallback((marker: ClusteredMarker) => {
@@ -301,10 +318,10 @@ export function EventMap({
         {/* Clickable area circles for SF neighborhoods */}
         {Object.entries(AREA_CENTER_COORDINATES).map(([area, coordinates]) => {
           const isSelected = selectedAreas.includes(area as SanFranciscoArea);
-          const areaEvents = events.filter(event => event.area === area);
+          const areaEvents = filteredEventsForCounting.filter(event => event.area === area);
           const hasEvents = areaEvents.length > 0;
           
-          // Only show areas that have events
+          // Only show areas that have events (after filtering)
           if (!hasEvents) return null;
           
           return (
