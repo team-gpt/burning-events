@@ -57,7 +57,7 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-gradient-to-br from-neutral-50 via-white to-neutral-100">
       {/* Header */}
-      <header className="border-b border-neutral-200 bg-white shadow-sm">
+      <header className="border-neutral-200 bg-white shadow-sm">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
             <div className="flex items-center gap-3">
@@ -80,7 +80,7 @@ export default function Home() {
       </header>
 
       {/* AI Search Section */}
-      <section className="border-b border-neutral-200 bg-white">
+      <section className="border-neutral-200 bg-white">
         <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
           <div className="flex flex-col items-center space-y-6">
             <AISearchInput

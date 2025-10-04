@@ -31,6 +31,7 @@ export type EventCategory =
 
 export type FilterType = "upcoming" | "past";
 
+
 export interface EventFilters {
   type: FilterType;
   category: EventCategory | "all";
