@@ -162,7 +162,7 @@ export const eventsRouter = createTRPCRouter({
         const now = new Date();
 
         // Determine time filter
-        let timeFilter = input.currentFilters?.type;
+        const timeFilter = input.currentFilters?.type;
 
         // Apply time filtering
         if (timeFilter === "upcoming") {
