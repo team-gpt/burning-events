@@ -18,6 +18,7 @@ export interface Event {
     currency: string;
   };
   tags?: string[];
+  url: string; // URL to the event page
 }
 
 export type EventCategory =

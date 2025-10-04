@@ -65,6 +65,7 @@ function convertPrismaEventToEvent(prismaEvent: EventWithOrganizers): Event {
     category: "Meetup" as EventCategory,
     image: prismaEvent.image || undefined,
     description: prismaEvent.description || undefined,
+    url: prismaEvent.url,
   };
 }
 

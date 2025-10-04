@@ -140,7 +140,7 @@ export default function Home() {
           />
         </div>
         {/* Map and Events Content */}
-        <div className="space-y-8">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
           {/* Map */}
           <div
             id="events-map"
@@ -157,10 +157,10 @@ export default function Home() {
               currentLocationFilter={filters.location}
               timeFilter={filters.type}
               categoryFilter={filters.category}
-              className="h-64 md:h-80"
+              className="h-[400px] lg:h-[600px]"
             />
           </div>
-          {/* Events List Below Map */}
+          {/* Events List */}
           <MapEventsList
             events={displayEvents}
             locationFilter={filters.location}
@@ -171,14 +171,6 @@ export default function Home() {
         </div>
       </div>
       {/* Footer */}
-      <footer className="mt-16 border-t border-neutral-200 bg-white">
-        <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-          <div className="text-center text-sm text-neutral-500">
-            <p>Built with Next.js, TypeScript, and Tailwind CSS</p>
-            <p className="mt-1">Discover your next amazing event experience</p>
-          </div>
-        </div>
-      </footer>
     </main>
   );
 }

@@ -1,10 +1,10 @@
 /**
  * MapEventsList Component
- * 
+ *
  * A specialized event list component optimized for map view interactions.
- * Displays filtered events below the map using the same layout and styling 
+ * Displays filtered events below the map using the same layout and styling
  * as the main EventsTimeline component while providing location-specific features.
- * 
+ *
  * Features:
  * - Reuses existing EventCard and DateGroupHeader components
  * - Shows location filter summary with clear action
@@ -12,10 +12,10 @@
  * - Provides loading states and empty state handling
  * - Responsive design with proper accessibility
  * - Smooth animations using Framer Motion
- * 
+ *
  * @example
  * ```tsx
- * <MapEventsList 
+ * <MapEventsList
  *   events={filteredEvents}
  *   locationFilter={{ areas: ['soma'], includeApproximate: true }}
  *   totalEventCount={allEvents.length}
@@ -97,29 +97,29 @@ const headerVariants = {
   },
 };
 
-const FilterSummary = React.memo(function FilterSummary({ 
-  locationFilter, 
-  filteredCount, 
-  totalCount, 
-  onClearFilter 
+const FilterSummary = React.memo(function FilterSummary({
+  locationFilter,
+  filteredCount,
+  totalCount,
+  onClearFilter,
 }: FilterSummaryProps) {
   // Helper function to safely get area display name
   const getSafeAreaDisplayName = (area: any): string => {
-    if (typeof area !== 'string') {
-      return 'Unknown area';
+    if (typeof area !== "string") {
+      return "Unknown area";
     }
-    
+
     // Check if it's a valid SanFranciscoArea type
     if (isSanFranciscoArea(area)) {
       return getAreaDisplayName(area);
     }
-    
+
     // If not, try to normalize it (convert to lowercase and replace spaces with hyphens)
-    const normalizedArea = area.toLowerCase().replace(/\s+/g, '-');
+    const normalizedArea = area.toLowerCase().replace(/\s+/g, "-");
     if (isSanFranciscoArea(normalizedArea)) {
       return getAreaDisplayName(normalizedArea);
     }
-    
+
     // If all else fails, return the original area name with proper capitalization
     return area.charAt(0).toUpperCase() + area.slice(1).toLowerCase();
   };
@@ -127,27 +127,29 @@ const FilterSummary = React.memo(function FilterSummary({
   const getFilterDescription = React.useMemo(() => {
     if (locationFilter.areas && locationFilter.areas.length > 0) {
       // Filter out null/undefined areas
-      const validAreas = locationFilter.areas.filter(area => area != null);
-      
+      const validAreas = locationFilter.areas.filter((area) => area != null);
+
       if (validAreas.length === 0) {
         return "Events in selected areas";
       }
-      
+
       if (validAreas.length === 1) {
         const area = validAreas[0]!;
         return `Events in ${getSafeAreaDisplayName(area)}`;
       } else if (validAreas.length <= 3) {
-        const areaNames = validAreas.map(area => getSafeAreaDisplayName(area));
+        const areaNames = validAreas.map((area) =>
+          getSafeAreaDisplayName(area),
+        );
         return `Events in ${areaNames.slice(0, -1).join(", ")} and ${areaNames[areaNames.length - 1]}`;
       } else {
         return `Events in ${validAreas.length} areas`;
       }
     }
-    
+
     if (locationFilter.center && locationFilter.radius) {
       return `Events within ${locationFilter.radius}km`;
     }
-    
+
     return "Filtered events";
   }, [locationFilter]);
 
@@ -156,33 +158,33 @@ const FilterSummary = React.memo(function FilterSummary({
       variants={headerVariants}
       initial="hidden"
       animate="visible"
-      className="flex items-center justify-between py-4 px-1 border-b border-neutral-200 bg-core-main"
+      className="bg-core-main flex items-center justify-between border-b border-neutral-200 px-1 py-4"
     >
-      <div className="flex items-center gap-3 min-w-0">
+      <div className="flex min-w-0 items-center gap-3">
         <div className="flex items-center gap-2 text-neutral-700">
-          <MapPin className="w-5 h-5 text-blue-600 flex-shrink-0" />
-          <h2 className="text-lg font-semibold text-neutral-900 truncate">
+          <MapPin className="h-5 w-5 flex-shrink-0 text-blue-600" />
+          <h2 className="truncate text-lg font-semibold text-neutral-900">
             {getFilterDescription}
           </h2>
         </div>
-        
-        <Badge 
-          variant="secondary" 
-          className="bg-blue-50 text-blue-700 border-blue-200 font-medium"
+
+        <Badge
+          variant="secondary"
+          className="border-blue-200 bg-blue-50 font-medium text-blue-700"
         >
           {filteredCount} of {totalCount} events
         </Badge>
       </div>
-      
+
       {onClearFilter && (
         <Button
           variant="ghost"
           size="sm"
           onClick={onClearFilter}
-          className="flex items-center gap-2 text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 flex-shrink-0"
+          className="flex flex-shrink-0 items-center gap-2 text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900"
           aria-label="Clear location filter"
         >
-          <X className="w-4 h-4" />
+          <X className="h-4 w-4" />
           Clear filter
         </Button>
       )}
@@ -190,32 +192,32 @@ const FilterSummary = React.memo(function FilterSummary({
   );
 });
 
-const MapEmptyState = React.memo(function MapEmptyState({ 
-  locationFilter, 
+const MapEmptyState = React.memo(function MapEmptyState({
+  locationFilter,
   onClearFilter,
-  className 
-}: { 
-  locationFilter?: LocationFilter; 
+  className,
+}: {
+  locationFilter?: LocationFilter;
   onClearFilter?: () => void;
   className?: string;
 }) {
   // Helper function to safely get area display name
   const getSafeAreaDisplayName = React.useCallback((area: any): string => {
-    if (typeof area !== 'string') {
-      return 'Unknown area';
+    if (typeof area !== "string") {
+      return "Unknown area";
     }
-    
+
     // Check if it's a valid SanFranciscoArea type
     if (isSanFranciscoArea(area)) {
       return getAreaDisplayName(area);
     }
-    
+
     // If not, try to normalize it (convert to lowercase and replace spaces with hyphens)
-    const normalizedArea = area.toLowerCase().replace(/\s+/g, '-');
+    const normalizedArea = area.toLowerCase().replace(/\s+/g, "-");
     if (isSanFranciscoArea(normalizedArea)) {
       return getAreaDisplayName(normalizedArea);
     }
-    
+
     // If all else fails, return the original area name with proper capitalization
     return area.charAt(0).toUpperCase() + area.slice(1).toLowerCase();
   }, []);
@@ -223,55 +225,56 @@ const MapEmptyState = React.memo(function MapEmptyState({
   const message = React.useMemo(() => {
     if (locationFilter?.areas && locationFilter.areas.length > 0) {
       // Filter out null/undefined areas
-      const validAreas = locationFilter.areas.filter(area => area != null);
-      
+      const validAreas = locationFilter.areas.filter((area) => area != null);
+
       if (validAreas.length === 0) {
         return "No events found in the selected areas.";
       }
-      
+
       if (validAreas.length === 1) {
         const area = validAreas[0]!;
         return `No events found in ${getSafeAreaDisplayName(area)}.`;
       }
       return "No events found in the selected areas.";
     }
-    
+
     if (locationFilter?.center && locationFilter?.radius) {
       return `No events found within ${locationFilter.radius}km of the selected location.`;
     }
-    
+
     return "No events match the current location filter.";
   }, [locationFilter, getSafeAreaDisplayName]);
 
   return (
-    <motion.div 
-      className={cn("flex flex-col items-center justify-center py-16 px-4 text-center", className)}
+    <motion.div
+      className={cn(
+        "flex flex-col items-center justify-center px-4 py-16 text-center",
+        className,
+      )}
       variants={itemVariants}
       initial="hidden"
       animate="visible"
     >
-      <div className="w-16 h-16 rounded-full bg-neutral-100 flex items-center justify-center mb-4">
-        <Search className="w-8 h-8 text-neutral-400" />
+      <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-neutral-100">
+        <Search className="h-8 w-8 text-neutral-400" />
       </div>
-      
-      <h3 className="text-lg font-semibold text-neutral-900 mb-2">
+
+      <h3 className="mb-2 text-lg font-semibold text-neutral-900">
         No events in this location
       </h3>
-      
-      <p className="text-neutral-600 mb-6 max-w-md">
-        {message}
-      </p>
-      
+
+      <p className="mb-6 max-w-md text-neutral-600">{message}</p>
+
       <div className="space-y-2 text-sm text-neutral-500">
         <p>Try selecting a different area on the map or</p>
         {onClearFilter && (
-          <Button 
+          <Button
             variant="outline"
             size="sm"
             onClick={onClearFilter}
             className="mt-3"
           >
-            <X className="w-4 h-4 mr-2" />
+            <X className="mr-2 h-4 w-4" />
             Clear location filter
           </Button>
         )}
@@ -280,19 +283,24 @@ const MapEmptyState = React.memo(function MapEmptyState({
   );
 });
 
-export const MapEventsList = React.memo(function MapEventsList({ 
-  events, 
+export const MapEventsList = React.memo(function MapEventsList({
+  events,
   locationFilter,
   className,
   isLoading = false,
   totalEventCount = 0,
-  onClearLocationFilter
+  onClearLocationFilter,
 }: MapEventsListProps) {
   const { groupedEvents } = useEventGrouping({ events, isPastEvents: false });
 
   if (isLoading) {
     return (
-      <div className={cn("bg-core-main", className)}>
+      <div
+        className={cn(
+          "bg-core-main flex h-[400px] flex-col overflow-hidden rounded-lg border border-neutral-200 shadow-sm lg:h-[600px]",
+          className,
+        )}
+      >
         {locationFilter && (
           <FilterSummary
             locationFilter={locationFilter}
@@ -301,7 +309,9 @@ export const MapEventsList = React.memo(function MapEventsList({
             onClearFilter={onClearLocationFilter}
           />
         )}
-        <LoadingState className="px-6 py-4" count={3} />
+        <div className="flex-1 overflow-y-auto">
+          <LoadingState className="px-6 py-4" count={3} />
+        </div>
       </div>
     );
   }
@@ -310,7 +320,12 @@ export const MapEventsList = React.memo(function MapEventsList({
   const showEmptyState = events.length === 0;
 
   return (
-    <div className={cn("bg-core-main", className)}>
+    <div
+      className={cn(
+        "bg-core-main flex h-[400px] flex-col overflow-hidden rounded-lg border border-neutral-200 shadow-sm lg:h-[600px]",
+        className,
+      )}
+    >
       {/* Filter Summary Header */}
       <AnimatePresence>
         {hasLocationFilter && locationFilter && (
@@ -324,7 +339,7 @@ export const MapEventsList = React.memo(function MapEventsList({
       </AnimatePresence>
 
       {/* Events List or Empty State */}
-      <div className="px-6 py-4">
+      <div className="flex-1 overflow-y-auto px-6 py-4">
         <AnimatePresence mode="wait">
           {showEmptyState ? (
             <MapEmptyState
@@ -333,7 +348,7 @@ export const MapEventsList = React.memo(function MapEventsList({
               onClearFilter={onClearLocationFilter}
             />
           ) : (
-            <motion.div 
+            <motion.div
               key="events-list"
               className="space-y-8"
               variants={containerVariants}
@@ -347,12 +362,12 @@ export const MapEventsList = React.memo(function MapEventsList({
                   layout
                   className="space-y-4"
                 >
-                  <DateGroupHeader 
-                    date={dateKey} 
+                  <DateGroupHeader
+                    date={dateKey}
                     eventCount={dayEvents.length}
                   />
-                  
-                  <motion.div 
+
+                  <motion.div
                     className="space-y-4"
                     variants={containerVariants}
                   >
@@ -362,10 +377,14 @@ export const MapEventsList = React.memo(function MapEventsList({
                         variants={itemVariants}
                         layout
                         whileHover={{ scale: 1.01 }}
-                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                        transition={{
+                          type: "spring",
+                          stiffness: 300,
+                          damping: 30,
+                        }}
                       >
-                        <EventCard 
-                          event={event} 
+                        <EventCard
+                          event={event}
                           className="border-neutral-200 hover:border-neutral-300"
                         />
                       </motion.div>
