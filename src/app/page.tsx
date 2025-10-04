@@ -64,9 +64,6 @@ export default function Home() {
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-r from-blue-600 to-purple-600">
                 <Sparkles className="h-4 w-4 text-white" />
               </div>
-              <h1 className="text-xl font-bold text-neutral-900">
-                Burning Events
-              </h1>
             </div>
             <div className="flex items-center gap-2 text-sm text-neutral-600">
               <Calendar className="h-4 w-4" />
@@ -81,7 +78,7 @@ export default function Home() {
 
       {/* AI Search Section */}
       <section className="border-neutral-200 bg-white">
-        <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl px-4 pb-8 sm:px-6 lg:px-8">
           <div className="flex flex-col items-center space-y-6">
             <AISearchInput
               onSearch={performSearch}
@@ -115,7 +112,7 @@ export default function Home() {
       </section>
 
       {/* Main Content */}
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 pb-8 sm:px-6 lg:px-8">
         {/* Map and Events Content */}
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
           {/* Map */}
