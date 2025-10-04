@@ -355,42 +355,30 @@ export const MapEventsList = React.memo(function MapEventsList({
               initial="hidden"
               animate="visible"
             >
-              {groupedEvents.map(([dateKey, dayEvents]) => (
-                <motion.div
-                  key={dateKey}
-                  variants={itemVariants}
-                  layout
-                  className="space-y-4"
-                >
-                  <DateGroupHeader
-                    date={dateKey}
-                    eventCount={dayEvents.length}
-                  />
-
+              {groupedEvents.map((event) => (
+                <>
                   <motion.div
                     className="space-y-4"
                     variants={containerVariants}
                   >
-                    {dayEvents.map((event) => (
-                      <motion.div
-                        key={event.id}
-                        variants={itemVariants}
-                        layout
-                        whileHover={{ scale: 1.01 }}
-                        transition={{
-                          type: "spring",
-                          stiffness: 300,
-                          damping: 30,
-                        }}
-                      >
-                        <EventCard
-                          event={event}
-                          className="border-neutral-200 hover:border-neutral-300"
-                        />
-                      </motion.div>
-                    ))}
+                    <motion.div
+                      key={event.id}
+                      variants={itemVariants}
+                      layout
+                      whileHover={{ scale: 1.01 }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 300,
+                        damping: 30,
+                      }}
+                    >
+                      <EventCard
+                        event={event}
+                        className="border-neutral-200 hover:border-neutral-300"
+                      />
+                    </motion.div>
                   </motion.div>
-                </motion.div>
+                </>
               ))}
             </motion.div>
           )}

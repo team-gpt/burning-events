@@ -9,7 +9,10 @@ interface UseEventGroupingProps {
   isPastEvents?: boolean;
 }
 
-export function useEventGrouping({ events, isPastEvents = false }: UseEventGroupingProps) {
+export function useEventGrouping({
+  events,
+  isPastEvents = false,
+}: UseEventGroupingProps) {
   const groupedEvents = useMemo(() => {
     const grouped = groupEventsByDate(events);
     return sortGroupedEventsByDate(grouped, isPastEvents);
@@ -24,7 +27,7 @@ export function useEventGrouping({ events, isPastEvents = false }: UseEventGroup
   }, [groupedEvents]);
 
   return {
-    groupedEvents,
+    groupedEvents: events,
     totalEventCount,
     groupCount,
   };

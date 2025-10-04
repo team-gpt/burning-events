@@ -90,9 +90,9 @@ export function AISearchInput({
               rows={1}
               style={{ outline: "none", boxShadow: "none" }}
               className={cn(
-                "flex-1 resize-none border-0 bg-transparent px-8 py-8 text-xl text-neutral-900 placeholder:text-base placeholder:text-neutral-500",
+                "text-md flex-1 resize-none border-0 bg-transparent px-8 py-8 text-neutral-900 placeholder:text-base placeholder:text-neutral-500",
                 "outline-none focus:border-0 focus:shadow-none focus:ring-0 focus:outline-none",
-                "max-h-28 min-h-[6rem] overflow-y-auto",
+                "max-h-40 min-h-[6rem] overflow-y-hidden",
                 isLoading && "opacity-50",
               )}
             />
