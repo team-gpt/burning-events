@@ -6,6 +6,10 @@ import { AISearchInput } from "~/components/events/AISearchInput";
 import { useEventFilters } from "~/hooks/useEventFilters";
 import { useAISearch } from "~/hooks/useAISearch";
 import { api } from "~/trpc/react";
+import { AnimatePresence, motion } from "framer-motion";
+import Image from "next/image";
+import logo from "../../public/logo.png";
+
 export default function Home() {
   // Fetch all events from the database
   const { data: allEvents = [], isLoading } = api.events.getAll.useQuery();
@@ -27,7 +31,6 @@ export default function Home() {
     events: allEvents,
     initialFilters: { type: "upcoming", category: "all" },
   });
-
   // AI Search hook
   const {
     isSearching,
@@ -50,20 +53,19 @@ export default function Home() {
       }
     },
   });
-
   // Use AI search results if available, otherwise use filtered events
   const displayEvents = hasActiveSearch ? searchResultEvents : filteredEvents;
-
   return (
     <main className="min-h-screen bg-gradient-to-br from-neutral-50 via-white to-neutral-100">
       {/* Header */}
       <header className="border-neutral-200 bg-white shadow-sm">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-r from-blue-600 to-purple-600">
-                <Sparkles className="h-4 w-4 text-white" />
+            <div className="mt-6 flex flex-row items-center gap-3">
+              <div className="-ml-24 flex h-16 w-16 items-center justify-center rounded-lg">
+                <Image src={logo} alt="Logo" width={256} height={256} />
               </div>
+              <h1 className="text-xl font-bold">Burning Events</h1>
             </div>
             <div className="flex items-center gap-2 text-sm text-neutral-600">
               <Calendar className="h-4 w-4" />
@@ -75,7 +77,6 @@ export default function Home() {
           </div>
         </div>
       </header>
-
       {/* AI Search Section */}
       <section className="border-neutral-200 bg-white">
         <div className="mx-auto max-w-7xl px-4 pb-8 sm:px-6 lg:px-8">
@@ -88,7 +89,6 @@ export default function Home() {
               selectedDate={filters.dateFilter}
               onDateChange={setDateFilter}
             />
-
             {hasActiveSearch && (
               <div className="flex items-center gap-4 text-sm">
                 <span className="text-neutral-600">
@@ -105,7 +105,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
       {/* Main Content */}
       <div className="mx-auto max-w-7xl px-4 pb-8 sm:px-6 lg:px-8">
         {/* Map and Events Content */}
