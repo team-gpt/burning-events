@@ -3,11 +3,13 @@
 
 generator client {
     provider = "prisma-client-js"
+    previewFeatures = ["postgresqlExtensions"]
 }
 
 datasource db {
     provider = "postgresql"
     url      = env("DATABASE_URL")
+    extensions = [pgvector(map: "vector")]
 }
 
 model Post {
@@ -20,18 +22,19 @@ model Post {
 }
 
 model Event {
-    id          String      @id @default(cuid())
+    id          String                       @id @default(cuid())
     title       String
-    description String      @db.Text
-    startDate   DateTime    @map("start_date")
-    endDate     DateTime    @map("end_date")
+    description String                       @db.Text
+    embeddings  Unsupported("vector(1536)")?
+    startDate   DateTime                     @map("start_date")
+    endDate     DateTime                     @map("end_date")
     image       String
-    venueName   String?     @map("venue_name")
+    venueName   String?                      @map("venue_name")
     address     String?
     area        String?
-    createdAt   DateTime    @default(now())
-    updatedAt   DateTime    @updatedAt
-    url         String      @map("url")
+    createdAt   DateTime                     @default(now())
+    updatedAt   DateTime                     @updatedAt
+    url         String                       @map("url")
     organizers  Organizer[]
 
 

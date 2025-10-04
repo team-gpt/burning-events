@@ -114,3 +114,65 @@ The `partiful_urls_locations.json` file should contain an array of objects with:
 - Matching is done strictly by URL, event names are ignored
 - The script will not update events that already have the correct area value
 - Run this migration after the initial event import (`populate-events.ts`)
+
+---
+
+# Populate Embeddings Migration
+
+This migration generates vector embeddings for event descriptions using OpenAI's text-embedding-3-small model.
+
+## Prerequisites
+
+1. Set your OpenAI API key in the `.env` file:
+
+   ```
+   OPENAI_API_KEY=your-api-key-here
+   ```
+
+2. Ensure the database has the pgvector extension enabled (already configured in docker-compose.yaml)
+
+## Running the Embeddings Migration
+
+```bash
+pnpm tsx src/manual-migrations/populate-embeddings.ts
+```
+
+## What it does
+
+The populate embeddings migration script:
+
+- Queries all events that don't have embeddings yet
+- Generates 1536-dimensional embeddings using OpenAI's text-embedding-3-small model
+- Processes events in batches of 10 to respect rate limits
+- Updates the embeddings column in the database
+- Provides progress updates and statistics
+- Includes error handling for individual events
+
+## Technical Details
+
+- Model: `text-embedding-3-small` with 1536 dimensions
+- Vector storage: PostgreSQL pgvector extension
+- Batch size: 10 events at a time
+- Rate limiting: 1 second delay between batches
+
+## Cost Considerations
+
+OpenAI charges for embeddings API usage. The text-embedding-3-small model is cost-effective but still incurs charges based on the number of tokens processed. Monitor your usage to avoid unexpected costs.
+
+## Rerunning the Migration
+
+The script only processes events where `embeddings IS NULL`, so it's safe to rerun if interrupted. It will skip events that already have embeddings.
+
+## Searching by Similarity
+
+Once embeddings are populated, you can search for similar events using semantic search:
+
+```bash
+# Search with a custom query
+pnpm tsx src/manual-migrations/search-by-embedding-example.ts "music festivals and dancing"
+
+# Or run with default example
+pnpm tsx src/manual-migrations/search-by-embedding-example.ts
+```
+
+The search uses cosine similarity to find events with descriptions semantically similar to your query.
