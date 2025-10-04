@@ -39,7 +39,6 @@ export interface EventFilters {
 export type GroupedEvents = Record<string, Event[]>;
 
 export type DateCategory = "today" | "tomorrow" | "past" | "future";
-<<<<<<< Updated upstream
 
 // Location-related types
 export interface Coordinates {
@@ -47,45 +46,45 @@ export interface Coordinates {
   lng: number;
 }
 
-export type LocationType = 'exact' | 'approximate';
+export type LocationType = "exact" | "approximate";
 
 /**
  * San Francisco neighborhood areas for event categorization
  * These represent major districts and neighborhoods in SF
  */
 export type SanFranciscoArea =
-  | 'soma' // South of Market
-  | 'mission' // Mission District
-  | 'mission-bay' // Mission Bay
-  | 'castro' // Castro District
-  | 'nob-hill' // Nob Hill
-  | 'russian-hill' // Russian Hill
-  | 'north-beach' // North Beach
-  | 'chinatown' // Chinatown
-  | 'financial' // Financial District
-  | 'union-square' // Union Square
-  | 'hayes-valley' // Hayes Valley
-  | 'pacific-heights' // Pacific Heights
-  | 'marina' // Marina District
-  | 'presidio' // Presidio
-  | 'richmond' // Richmond District
-  | 'sunset' // Sunset District
-  | 'haight' // Haight-Ashbury
-  | 'potrero-hill' // Potrero Hill
-  | 'dogpatch' // Dogpatch
-  | 'tenderloin' // Tenderloin
-  | 'civic-center' // Civic Center
-  | 'western-addition' // Western Addition
-  | 'fillmore' // Fillmore
-  | 'japantown' // Japantown
-  | 'lower-haight' // Lower Haight
-  | 'glen-park' // Glen Park
-  | 'bernal-heights' // Bernal Heights
-  | 'outer-mission' // Outer Mission
-  | 'excelsior' // Excelsior
-  | 'visitacion-valley' // Visitacion Valley
-  | 'bayview' // Bayview
-  | 'hunters-point'; // Hunters Point
+  | "soma" // South of Market
+  | "mission" // Mission District
+  | "mission-bay" // Mission Bay
+  | "castro" // Castro District
+  | "nob-hill" // Nob Hill
+  | "russian-hill" // Russian Hill
+  | "north-beach" // North Beach
+  | "chinatown" // Chinatown
+  | "financial" // Financial District
+  | "union-square" // Union Square
+  | "hayes-valley" // Hayes Valley
+  | "pacific-heights" // Pacific Heights
+  | "marina" // Marina District
+  | "presidio" // Presidio
+  | "richmond" // Richmond District
+  | "sunset" // Sunset District
+  | "haight" // Haight-Ashbury
+  | "potrero-hill" // Potrero Hill
+  | "dogpatch" // Dogpatch
+  | "tenderloin" // Tenderloin
+  | "civic-center" // Civic Center
+  | "western-addition" // Western Addition
+  | "fillmore" // Fillmore
+  | "japantown" // Japantown
+  | "lower-haight" // Lower Haight
+  | "glen-park" // Glen Park
+  | "bernal-heights" // Bernal Heights
+  | "outer-mission" // Outer Mission
+  | "excelsior" // Excelsior
+  | "visitacion-valley" // Visitacion Valley
+  | "bayview" // Bayview
+  | "hunters-point"; // Hunters Point
 
 /**
  * Bounds for San Francisco area - useful for map viewport
@@ -137,7 +136,7 @@ export interface EventMarker {
  * Map interaction event types
  */
 export interface MapInteractionEvent {
-  type: 'marker-click' | 'marker-hover' | 'map-click' | 'bounds-change';
+  type: "marker-click" | "marker-hover" | "map-click" | "bounds-change";
   payload: {
     eventId?: string;
     coordinates?: Coordinates;
@@ -176,38 +175,38 @@ export const SF_CENTER: Coordinates = {
  * Area display names for UI
  */
 export const AREA_DISPLAY_NAMES: Record<SanFranciscoArea, string> = {
-  'soma': 'SoMa',
-  'mission': 'Mission',
-  'mission-bay': 'Mission Bay',
-  'castro': 'Castro',
-  'nob-hill': 'Nob Hill',
-  'russian-hill': 'Russian Hill',
-  'north-beach': 'North Beach',
-  'chinatown': 'Chinatown',
-  'financial': 'Financial District',
-  'union-square': 'Union Square',
-  'hayes-valley': 'Hayes Valley',
-  'pacific-heights': 'Pacific Heights',
-  'marina': 'Marina',
-  'presidio': 'Presidio',
-  'richmond': 'Richmond',
-  'sunset': 'Sunset',
-  'haight': 'Haight-Ashbury',
-  'potrero-hill': 'Potrero Hill',
-  'dogpatch': 'Dogpatch',
-  'tenderloin': 'Tenderloin',
-  'civic-center': 'Civic Center',
-  'western-addition': 'Western Addition',
-  'fillmore': 'Fillmore',
-  'japantown': 'Japantown',
-  'lower-haight': 'Lower Haight',
-  'glen-park': 'Glen Park',
-  'bernal-heights': 'Bernal Heights',
-  'outer-mission': 'Outer Mission',
-  'excelsior': 'Excelsior',
-  'visitacion-valley': 'Visitacion Valley',
-  'bayview': 'Bayview',
-  'hunters-point': 'Hunters Point',
+  soma: "SoMa",
+  mission: "Mission",
+  "mission-bay": "Mission Bay",
+  castro: "Castro",
+  "nob-hill": "Nob Hill",
+  "russian-hill": "Russian Hill",
+  "north-beach": "North Beach",
+  chinatown: "Chinatown",
+  financial: "Financial District",
+  "union-square": "Union Square",
+  "hayes-valley": "Hayes Valley",
+  "pacific-heights": "Pacific Heights",
+  marina: "Marina",
+  presidio: "Presidio",
+  richmond: "Richmond",
+  sunset: "Sunset",
+  haight: "Haight-Ashbury",
+  "potrero-hill": "Potrero Hill",
+  dogpatch: "Dogpatch",
+  tenderloin: "Tenderloin",
+  "civic-center": "Civic Center",
+  "western-addition": "Western Addition",
+  fillmore: "Fillmore",
+  japantown: "Japantown",
+  "lower-haight": "Lower Haight",
+  "glen-park": "Glen Park",
+  "bernal-heights": "Bernal Heights",
+  "outer-mission": "Outer Mission",
+  excelsior: "Excelsior",
+  "visitacion-valley": "Visitacion Valley",
+  bayview: "Bayview",
+  "hunters-point": "Hunters Point",
 } as const;
 
 /**
@@ -255,8 +254,8 @@ export function eventToMarker(event: Event): EventMarker | null {
  * Helper function to create a location filter for specific areas
  */
 export function createAreaLocationFilter(
-  areas: SanFranciscoArea[], 
-  includeApproximate: boolean = true
+  areas: SanFranciscoArea[],
+  includeApproximate: boolean = true,
 ): LocationFilter {
   return {
     areas,
@@ -268,9 +267,9 @@ export function createAreaLocationFilter(
  * Helper function to create a location filter for radius-based filtering
  */
 export function createRadiusLocationFilter(
-  center: Coordinates, 
-  radius: number, 
-  includeApproximate: boolean = true
+  center: Coordinates,
+  radius: number,
+  includeApproximate: boolean = true,
 ): LocationFilter {
   return {
     center,
@@ -278,5 +277,3 @@ export function createRadiusLocationFilter(
     includeApproximate,
   };
 }
-=======
->>>>>>> Stashed changes
