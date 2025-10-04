@@ -18,13 +18,15 @@ export const eventsRouter = createTRPCRouter({
       z.object({
         upcoming: z.boolean().optional(),
         category: z.string().optional(),
-        areas: z.array(z.string()).optional(),  // Multiple areas support
-        center: z.object({
-          lat: z.number(),
-          lng: z.number(),
-        }).optional(),  // Center point for radius filtering
-        radius: z.number().positive().optional(),  // Radius in kilometers
-        includeApproximate: z.boolean().optional().default(true),  // Include approximate locations
+        areas: z.array(z.string()).optional(), // Multiple areas support
+        center: z
+          .object({
+            lat: z.number(),
+            lng: z.number(),
+          })
+          .optional(), // Center point for radius filtering
+        radius: z.number().positive().optional(), // Radius in kilometers
+        includeApproximate: z.boolean().optional().default(true), // Include approximate locations
         limit: z.number().min(1).max(100).optional(),
         offset: z.number().min(0).optional(),
       }),

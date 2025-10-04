@@ -116,15 +116,20 @@ export class EventsService {
   /**
    * Calculate distance between two coordinates using Haversine formula
    */
-  private static calculateDistance(coord1: { lat: number; lng: number }, coord2: { lat: number; lng: number }): number {
+  private static calculateDistance(
+    coord1: { lat: number; lng: number },
+    coord2: { lat: number; lng: number },
+  ): number {
     const R = 6371; // Earth's radius in kilometers
-    const dLat = (coord2.lat - coord1.lat) * Math.PI / 180;
-    const dLng = (coord2.lng - coord1.lng) * Math.PI / 180;
-    const a = 
-      Math.sin(dLat/2) * Math.sin(dLat/2) +
-      Math.cos(coord1.lat * Math.PI / 180) * Math.cos(coord2.lat * Math.PI / 180) * 
-      Math.sin(dLng/2) * Math.sin(dLng/2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    const dLat = ((coord2.lat - coord1.lat) * Math.PI) / 180;
+    const dLng = ((coord2.lng - coord1.lng) * Math.PI) / 180;
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos((coord1.lat * Math.PI) / 180) *
+        Math.cos((coord2.lat * Math.PI) / 180) *
+        Math.sin(dLng / 2) *
+        Math.sin(dLng / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     return R * c;
   }
 
@@ -134,10 +139,10 @@ export class EventsService {
   static async getFilteredEvents(filters?: {
     upcoming?: boolean;
     category?: EventCategory | "all";
-    areas?: string[];  // Changed from single area to multiple areas
-    center?: { lat: number; lng: number };  // For radius-based filtering
-    radius?: number;  // Radius in kilometers
-    includeApproximate?: boolean;  // Whether to include events with approximate locations
+    areas?: string[]; // Changed from single area to multiple areas
+    center?: { lat: number; lng: number }; // For radius-based filtering
+    radius?: number; // Radius in kilometers
+    includeApproximate?: boolean; // Whether to include events with approximate locations
     limit?: number;
     offset?: number;
   }): Promise<Event[]> {
@@ -157,7 +162,7 @@ export class EventsService {
     // Filter by areas (multiple areas support)
     if (filters?.areas && filters.areas.length > 0) {
       whereClause.area = {
-        in: filters.areas
+        in: filters.areas,
       };
     }
 
@@ -180,26 +185,32 @@ export class EventsService {
 
     // Apply radius-based filtering if needed
     if (filters?.center && filters?.radius) {
-      events = events.filter(event => {
+      events = events.filter((event) => {
         // Skip events without coordinates
         if (!event.coordinates) {
           return false;
         }
 
         // Skip approximate locations if not included
-        if (event.locationType === 'approximate' && !filters.includeApproximate) {
+        if (
+          event.locationType === "approximate" &&
+          !filters.includeApproximate
+        ) {
           return false;
         }
 
         // Calculate distance and check if within radius
-        const distance = this.calculateDistance(filters.center!, event.coordinates);
+        const distance = this.calculateDistance(
+          filters.center!,
+          event.coordinates,
+        );
         return distance <= filters.radius!;
       });
     }
 
     // Apply category filter (if not done in DB query)
     if (filters?.category && filters.category !== "all") {
-      events = events.filter(event => event.category === filters.category);
+      events = events.filter((event) => event.category === filters.category);
     }
 
     // Apply pagination after all filtering
