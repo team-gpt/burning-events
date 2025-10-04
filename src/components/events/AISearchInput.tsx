@@ -118,8 +118,8 @@ export function AISearchInput({
                 disabled={true}
                 className={cn(
                   "h-7 rounded-md px-3 py-1 text-xs font-medium transition-all",
-                  "opacity-50 pointer-events-none cursor-not-allowed",
-                  "border border-neutral-200 bg-neutral-100 text-neutral-500"
+                  "pointer-events-none cursor-not-allowed opacity-50",
+                  "border border-neutral-200 bg-neutral-100 text-neutral-500",
                 )}
               >
                 Food
@@ -135,11 +135,11 @@ export function AISearchInput({
               disabled={true}
               className={cn(
                 "h-7 rounded-md px-3 py-1 text-xs font-medium transition-all",
-                "opacity-50 pointer-events-none cursor-not-allowed",
-                "border border-neutral-200 bg-neutral-100 text-neutral-500"
+                "pointer-events-none cursor-not-allowed opacity-50",
+                "border border-neutral-200 bg-neutral-100 text-neutral-500",
               )}
             >
-              Is Paid
+              $$$
             </Toggle>
 
             {/* Keynotes Toggle (Disabled) */}
@@ -148,8 +148,8 @@ export function AISearchInput({
               disabled={true}
               className={cn(
                 "h-7 rounded-md px-3 py-1 text-xs font-medium transition-all",
-                "opacity-50 pointer-events-none cursor-not-allowed",
-                "border border-neutral-200 bg-neutral-100 text-neutral-500"
+                "pointer-events-none cursor-not-allowed opacity-50",
+                "border border-neutral-200 bg-neutral-100 text-neutral-500",
               )}
             >
               Keynotes
@@ -160,7 +160,7 @@ export function AISearchInput({
               date={undefined}
               onDateChange={undefined}
               placeholder="Date"
-              className="h-7 text-xs opacity-50 pointer-events-none"
+              className="pointer-events-none h-7 text-xs opacity-50"
               disabled={true}
             />
           </div>
