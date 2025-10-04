@@ -34,14 +34,14 @@ export function DatePicker({
         <Button
           variant="outline"
           className={cn(
-            "w-[280px] justify-start text-left font-normal",
+            "w-auto justify-start text-left font-normal px-3 py-1",
             !date && "text-muted-foreground",
             className
           )}
           disabled={disabled}
         >
-          <CalendarIcon className="mr-2 h-4 w-4" />
-          {date ? format(date, "PPP") : <span>{placeholder}</span>}
+          <CalendarIcon className="mr-2 h-3 w-3" />
+          {date ? format(date, "MMM d, yyyy") : <span>{placeholder}</span>}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0">
@@ -65,12 +65,12 @@ export function DatePickerDemo() {
         <Button
           variant="outline"
           className={cn(
-            "w-[280px] justify-start text-left font-normal",
+            "w-auto justify-start text-left font-normal px-3 py-1",
             !date && "text-muted-foreground"
           )}
         >
-          <CalendarIcon className="mr-2 h-4 w-4" />
-          {date ? format(date, "PPP") : <span>Pick a date</span>}
+          <CalendarIcon className="mr-2 h-3 w-3" />
+          {date ? format(date, "MMM d, yyyy") : <span>Pick a date</span>}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0">

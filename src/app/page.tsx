@@ -85,13 +85,8 @@ export default function Home() {
               isLoading={isSearching}
               error={searchError}
               className="w-full max-w-3xl"
-              selectedFilter={filters.type}
-              selectedCategory={filters.category}
               selectedDate={filters.dateFilter}
-              onFilterChange={setTimeFilter}
-              onCategoryChange={setCategoryFilter}
               onDateChange={setDateFilter}
-              categories={categories}
             />
 
             {hasActiveSearch && (
