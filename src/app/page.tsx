@@ -4,11 +4,15 @@ import { useState } from "react";
 import { Calendar, Sparkles } from "lucide-react";
 import { EventsTimeline } from "~/components/events/EventsTimeline";
 import { FilterControls } from "~/components/events/FilterControls";
+import { EventMap } from "~/components/events/EventMap";
+import { MapEventsList } from "~/components/events/MapEventsList";
+import { ViewToggle, type ViewType } from "~/components/events/ViewToggle";
 import { useEventFilters } from "~/hooks/useEventFilters";
 import { dummyEvents, getAllCategories } from "~/data/events";
 
 export default function Home() {
   const [isLoading] = useState(false);
+  const [currentView, setCurrentView] = useState<ViewType>('list');
   const categories = getAllCategories();
   
   const {
@@ -16,6 +20,10 @@ export default function Home() {
     filteredEvents,
     setTimeFilter,
     setCategoryFilter,
+    setLocationFilter,
+    clearLocationFilter,
+    toggleAreaSelection,
+    toggleCoordinateSelection,
   } = useEventFilters({
     events: dummyEvents,
     initialFilters: { type: "upcoming", category: "all" }
@@ -57,6 +65,14 @@ export default function Home() {
           </p>
         </div>
 
+        {/* View Toggle */}
+        <div className="mb-6">
+          <ViewToggle
+            currentView={currentView}
+            onViewChange={setCurrentView}
+          />
+        </div>
+
         {/* Filters */}
         <div className="mb-8">
           <FilterControls
@@ -68,12 +84,38 @@ export default function Home() {
           />
         </div>
 
-        {/* Events Timeline */}
-        <EventsTimeline
-          events={filteredEvents}
-          isLoading={isLoading}
-          isPastEvents={filters.type === "past"}
-        />
+        {/* Events Content - List or Map View */}
+        {currentView === 'list' ? (
+          <EventsTimeline
+            events={filteredEvents}
+            isLoading={isLoading}
+            isPastEvents={filters.type === "past"}
+          />
+        ) : (
+          <div className="space-y-8">
+            {/* Map */}
+            <div className="bg-white rounded-lg shadow-sm border border-neutral-200 overflow-hidden">
+              <EventMap
+                events={dummyEvents}
+                onLocationFilter={setLocationFilter}
+                selectedLocations={filters.location ? [filters.location] : undefined}
+                onToggleArea={toggleAreaSelection}
+                onToggleCoordinates={toggleCoordinateSelection}
+                currentLocationFilter={filters.location}
+                className="h-96 md:h-[500px]"
+              />
+            </div>
+            
+            {/* Filtered Events Below Map */}
+            <MapEventsList
+              events={filteredEvents}
+              locationFilter={filters.location}
+              totalEventCount={dummyEvents.length}
+              onClearLocationFilter={clearLocationFilter}
+              isLoading={isLoading}
+            />
+          </div>
+        )}
       </div>
 
       {/* Footer */}
