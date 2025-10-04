@@ -1,5 +1,9 @@
 "use client";
 
+<<<<<<< Updated upstream
+=======
+import { useState, useMemo } from "react";
+>>>>>>> Stashed changes
 import { Calendar, Sparkles } from "lucide-react";
 import { FilterControls } from "~/components/events/FilterControls";
 import { EventMap } from "~/components/events/EventMap";
@@ -9,17 +13,8 @@ import { api } from "~/trpc/react";
 
 export default function Home() {
 
-  // Fetch all events from the database
-  const { data: allEvents = [], isLoading } = api.events.getAll.useQuery();
-
-  // Get unique categories from the fetched events
-  const categories = Array.from(
-    new Set(allEvents.map((event) => event.category)),
-  );
-
   const {
     filters,
-    filteredEvents,
     setTimeFilter,
     setCategoryFilter,
     setLocationFilter,
@@ -27,9 +22,34 @@ export default function Home() {
     toggleAreaSelection,
     toggleCoordinateSelection,
   } = useEventFilters({
-    events: allEvents,
+    events: [], // We don't need to pass events anymore
     initialFilters: { type: "upcoming", category: "all" },
   });
+
+  // Build query parameters from filters
+  const queryParams = useMemo(() => ({
+    upcoming: filters.type === "upcoming" ? true : filters.type === "past" ? false : undefined,
+    category: filters.category === "all" ? undefined : filters.category,
+    areas: filters.location?.areas,
+    center: filters.location?.center,
+    radius: filters.location?.radius,
+    includeApproximate: filters.location?.includeApproximate ?? true,
+  }), [filters]);
+
+  // Fetch filtered events from the backend
+  const { data: filteredEvents = [], isLoading } = api.events.getFiltered.useQuery(queryParams);
+
+  // Fetch all events only for the map view (to show all markers)
+  const { data: allEvents = [] } = api.events.getAll.useQuery(undefined, {
+    // Only fetch when map view is active
+    enabled: currentView === "map",
+  });
+
+  // Get unique categories from the filtered events
+  const categories = useMemo(() => {
+    const eventsToUse = currentView === "map" ? allEvents : filteredEvents;
+    return Array.from(new Set(eventsToUse.map((event) => event.category)));
+  }, [allEvents, filteredEvents, currentView]);
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-neutral-50 via-white to-neutral-100">

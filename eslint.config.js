@@ -35,6 +35,9 @@ export default tseslint.config(
       ],
 
       // Type safety rules - set to warn instead of error
+      "@typescript-eslint/prefer-regexp-exec": "warn",
+      "@typescript-eslint/prefer-optional-chain": "warn",
+      "@typescript-eslint/no-unnecessary-type-assertion": "warn",
       "@typescript-eslint/dot-notation": "warn",
       "@typescript-eslint/no-explicit-any": "warn",
       "@typescript-eslint/no-unsafe-assignment": "warn",

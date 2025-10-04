@@ -114,21 +114,36 @@ export class EventsService {
   }
 
   /**
-   * Get events with filtering
+   * Calculate distance between two coordinates using Haversine formula
+   */
+  private static calculateDistance(coord1: { lat: number; lng: number }, coord2: { lat: number; lng: number }): number {
+    const R = 6371; // Earth's radius in kilometers
+    const dLat = (coord2.lat - coord1.lat) * Math.PI / 180;
+    const dLng = (coord2.lng - coord1.lng) * Math.PI / 180;
+    const a = 
+      Math.sin(dLat/2) * Math.sin(dLat/2) +
+      Math.cos(coord1.lat * Math.PI / 180) * Math.cos(coord2.lat * Math.PI / 180) * 
+      Math.sin(dLng/2) * Math.sin(dLng/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R * c;
+  }
+
+  /**
+   * Get events with comprehensive filtering
    */
   static async getFilteredEvents(filters?: {
     upcoming?: boolean;
     category?: EventCategory | "all";
-    area?: string;
+    areas?: string[];  // Changed from single area to multiple areas
+    center?: { lat: number; lng: number };  // For radius-based filtering
+    radius?: number;  // Radius in kilometers
+    includeApproximate?: boolean;  // Whether to include events with approximate locations
     limit?: number;
     offset?: number;
   }): Promise<Event[]> {
     const now = new Date();
 
-    const whereClause: {
-      startDate?: { gte: Date } | { lt: Date };
-      area?: string;
-    } = {};
+    const whereClause: any = {};
 
     // Filter by upcoming/past
     if (filters?.upcoming !== undefined) {
@@ -139,12 +154,15 @@ export class EventsService {
       }
     }
 
-    // Filter by area
-    if (filters?.area && filters.area !== "all") {
-      whereClause.area = filters.area;
+    // Filter by areas (multiple areas support)
+    if (filters?.areas && filters.areas.length > 0) {
+      whereClause.area = {
+        in: filters.areas
+      };
     }
 
-    const prismaEvents = await db.event.findMany({
+    // Fetch events based on basic filters
+    let prismaEvents = await db.event.findMany({
       where: whereClause,
       include: {
         organizers: true,
@@ -152,11 +170,46 @@ export class EventsService {
       orderBy: {
         startDate: filters?.upcoming !== false ? "asc" : "desc",
       },
-      take: filters?.limit,
-      skip: filters?.offset,
+      // Don't apply limit/offset yet if we need to do radius filtering
+      take: filters?.center && filters?.radius ? undefined : filters?.limit,
+      skip: filters?.center && filters?.radius ? undefined : filters?.offset,
     });
 
-    return prismaEvents.map(convertPrismaEventToEvent);
+    // Convert to Event type to get coordinates
+    let events = prismaEvents.map(convertPrismaEventToEvent);
+
+    // Apply radius-based filtering if needed
+    if (filters?.center && filters?.radius) {
+      events = events.filter(event => {
+        // Skip events without coordinates
+        if (!event.coordinates) {
+          return false;
+        }
+
+        // Skip approximate locations if not included
+        if (event.locationType === 'approximate' && !filters.includeApproximate) {
+          return false;
+        }
+
+        // Calculate distance and check if within radius
+        const distance = this.calculateDistance(filters.center!, event.coordinates);
+        return distance <= filters.radius!;
+      });
+    }
+
+    // Apply category filter (if not done in DB query)
+    if (filters?.category && filters.category !== "all") {
+      events = events.filter(event => event.category === filters.category);
+    }
+
+    // Apply pagination after all filtering
+    if (filters?.center && filters?.radius) {
+      const start = filters.offset || 0;
+      const end = filters.limit ? start + filters.limit : undefined;
+      events = events.slice(start, end);
+    }
+
+    return events;
   }
 
   /**
@@ -201,7 +254,7 @@ export class EventsService {
    * Get events by area
    */
   static async getEventsByArea(area: string): Promise<Event[]> {
-    return this.getFilteredEvents({ area });
+    return this.getFilteredEvents({ areas: [area] });
   }
 
   /**

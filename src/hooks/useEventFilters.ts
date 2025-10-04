@@ -80,18 +80,23 @@ function filterEventsByLocation(events: Event[], locationFilter: LocationFilter)
 }
 
 interface UseEventFiltersProps {
-  events: Event[];
+  events?: Event[]; // Make events optional for backward compatibility
   initialFilters?: Partial<EventFilters>;
 }
 
-export function useEventFilters({ events, initialFilters }: UseEventFiltersProps) {
+export function useEventFilters({ events = [], initialFilters }: UseEventFiltersProps) {
   const [filters, setFilters] = useState<EventFilters>({
     type: initialFilters?.type ?? "upcoming",
     category: initialFilters?.category ?? "all",
     location: initialFilters?.location,
   });
 
+  // Keep filteredEvents for backward compatibility, but it will be empty if no events are passed
   const filteredEvents = useMemo(() => {
+    if (events.length === 0) {
+      return [];
+    }
+
     // First filter by time (past/upcoming)
     let filtered = filterEventsByTime(events, filters.type);
     
