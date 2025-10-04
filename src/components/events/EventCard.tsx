@@ -41,10 +41,10 @@ export function EventCard({
           className,
         )}
       >
-        <CardHeader className={cn("pb-3", isCompact ? "p-4" : "p-6")}>
-          <div className="flex items-start justify-between gap-4">
+        <CardHeader className={cn("pb-2", isCompact ? "p-3" : "p-4")}>
+          <div className="flex items-start justify-between gap-3">
             <div className="min-w-0 flex-1">
-              <div className="mb-2 flex items-center gap-2">
+              <div className="mb-1.5 flex items-center gap-1.5">
                 <Badge
                   className={cn(
                     "text-xs font-medium",
@@ -62,7 +62,7 @@ export function EventCard({
               <h3
                 className={cn(
                   "line-clamp-1 font-semibold text-neutral-900 transition-colors group-hover:text-blue-700",
-                  isCompact ? "text-base" : "text-lg",
+                  isCompact ? "text-sm" : "text-base",
                 )}
               >
                 {event.title}
@@ -70,8 +70,8 @@ export function EventCard({
 
               <p
                 className={cn(
-                  "mt-1 line-clamp-2 text-neutral-600",
-                  isCompact ? "text-sm" : "text-base",
+                  "mt-0.5 line-clamp-1 text-neutral-600",
+                  isCompact ? "text-xs" : "text-sm",
                 )}
               >
                 {event.subtitle}
@@ -79,7 +79,7 @@ export function EventCard({
             </div>
 
             {event.image && !isCompact && (
-              <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg bg-neutral-100">
+              <div className="h-12 w-12 flex-shrink-0 overflow-hidden rounded-lg bg-neutral-100">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={event.image}
@@ -92,42 +92,42 @@ export function EventCard({
         </CardHeader>
 
         <CardContent
-          className={cn("pt-0", isCompact ? "px-4 pb-4" : "px-6 pb-6")}
+          className={cn("pt-0", isCompact ? "px-3 pb-3" : "px-4 pb-4")}
         >
-          <div className="space-y-2">
-            <div className="flex items-center gap-2 text-sm text-neutral-600">
-              <Clock className="h-4 w-4" />
+          <div className={cn("space-y-1.5", isCompact && "space-y-1")}>
+            <div className={cn("flex items-center gap-1.5", isCompact ? "text-xs" : "text-sm", "text-neutral-600")}>
+              <Clock className={cn(isCompact ? "h-3 w-3" : "h-4 w-4")} />
               <span>{getRelativeEventTime(event.date)}</span>
             </div>
 
             {event.location && (
-              <div className="flex items-center gap-2 text-sm text-neutral-600">
-                <MapPin className="h-4 w-4" />
+              <div className={cn("flex items-center gap-1.5", isCompact ? "text-xs" : "text-sm", "text-neutral-600")}>
+                <MapPin className={cn(isCompact ? "h-3 w-3" : "h-4 w-4")} />
                 <span className="line-clamp-1">{event.location}</span>
               </div>
             )}
 
             {event.attendeeCount && (
-              <div className="flex items-center gap-2 text-sm text-neutral-600">
-                <Users className="h-4 w-4" />
+              <div className={cn("flex items-center gap-1.5", isCompact ? "text-xs" : "text-sm", "text-neutral-600")}>
+                <Users className={cn(isCompact ? "h-3 w-3" : "h-4 w-4")} />
                 <span>{event.attendeeCount} attendees</span>
               </div>
             )}
 
             {event.tags && event.tags.length > 0 && !isCompact && (
-              <div className="mt-3 flex flex-wrap items-center gap-1">
+              <div className="mt-2 flex flex-wrap items-center gap-1">
                 <Tag className="h-3 w-3 text-neutral-400" />
-                {event.tags.slice(0, 3).map((tag) => (
+                {event.tags.slice(0, 2).map((tag) => (
                   <span
                     key={tag}
-                    className="rounded-full bg-neutral-100 px-2 py-1 text-xs text-neutral-500"
+                    className="rounded-full bg-neutral-100 px-1.5 py-0.5 text-xs text-neutral-500"
                   >
                     {tag}
                   </span>
                 ))}
-                {event.tags.length > 3 && (
+                {event.tags.length > 2 && (
                   <span className="text-xs text-neutral-400">
-                    +{event.tags.length - 3} more
+                    +{event.tags.length - 2} more
                   </span>
                 )}
               </div>
