@@ -1,53 +1,90 @@
-import Link from "next/link";
+"use client";
 
-import { LatestPost } from "~/app/_components/post";
-import { api, HydrateClient } from "~/trpc/server";
+import { useState } from "react";
+import { Calendar, Sparkles } from "lucide-react";
+import { EventsTimeline } from "~/components/events/EventsTimeline";
+import { FilterControls } from "~/components/events/FilterControls";
+import { useEventFilters } from "~/hooks/useEventFilters";
+import { dummyEvents, getAllCategories } from "~/data/events";
 
-export default async function Home() {
-  const hello = await api.post.hello({ text: "from tRPC" });
-
-  void api.post.getLatest.prefetch();
+export default function Home() {
+  const [isLoading] = useState(false);
+  const categories = getAllCategories();
+  
+  const {
+    filters,
+    filteredEvents,
+    setTimeFilter,
+    setCategoryFilter,
+  } = useEventFilters({
+    events: dummyEvents,
+    initialFilters: { type: "upcoming", category: "all" }
+  });
 
   return (
-    <HydrateClient>
-      <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
-        <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16">
-          <h1 className="text-5xl font-extrabold tracking-tight sm:text-[5rem]">
-            Create <span className="text-[hsl(280,100%,70%)]">T3</span> App
-          </h1>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
-            <Link
-              className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 hover:bg-white/20"
-              href="https://create.t3.gg/en/usage/first-steps"
-              target="_blank"
-            >
-              <h3 className="text-2xl font-bold">First Steps →</h3>
-              <div className="text-lg">
-                Just the basics - Everything you need to know to set up your
-                database and authentication.
+    <main className="min-h-screen bg-gradient-to-br from-neutral-50 via-white to-neutral-100">
+      {/* Header */}
+      <header className="bg-white border-b border-neutral-200 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+                <Sparkles className="w-4 h-4 text-white" />
               </div>
-            </Link>
-            <Link
-              className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 hover:bg-white/20"
-              href="https://create.t3.gg/en/introduction"
-              target="_blank"
-            >
-              <h3 className="text-2xl font-bold">Documentation →</h3>
-              <div className="text-lg">
-                Learn more about Create T3 App, the libraries it uses, and how
-                to deploy it.
-              </div>
-            </Link>
+              <h1 className="text-xl font-bold text-neutral-900">
+                Burning Events
+              </h1>
+            </div>
+            
+            <div className="flex items-center gap-2 text-sm text-neutral-600">
+              <Calendar className="w-4 h-4" />
+              <span>{filteredEvents.length} events found</span>
+            </div>
           </div>
-          <div className="flex flex-col items-center gap-2">
-            <p className="text-2xl text-white">
-              {hello ? hello.greeting : "Loading tRPC query..."}
-            </p>
-          </div>
-
-          <LatestPost />
         </div>
-      </main>
-    </HydrateClient>
+      </header>
+
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Page Title & Description */}
+        <div className="mb-8">
+          <h2 className="text-3xl font-bold text-neutral-900 mb-2">
+            Discover Amazing Events
+          </h2>
+          <p className="text-lg text-neutral-600 max-w-2xl">
+            Explore upcoming conferences, workshops, meetups, and networking events. 
+            Find your next great learning experience or professional opportunity.
+          </p>
+        </div>
+
+        {/* Filters */}
+        <div className="mb-8">
+          <FilterControls
+            selectedFilter={filters.type}
+            selectedCategory={filters.category}
+            onFilterChange={setTimeFilter}
+            onCategoryChange={setCategoryFilter}
+            categories={categories}
+          />
+        </div>
+
+        {/* Events Timeline */}
+        <EventsTimeline
+          events={filteredEvents}
+          isLoading={isLoading}
+          isPastEvents={filters.type === "past"}
+        />
+      </div>
+
+      {/* Footer */}
+      <footer className="bg-white border-t border-neutral-200 mt-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="text-center text-sm text-neutral-500">
+            <p>Built with Next.js, TypeScript, and Tailwind CSS</p>
+            <p className="mt-1">Discover your next amazing event experience</p>
+          </div>
+        </div>
+      </footer>
+    </main>
   );
 }
