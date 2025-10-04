@@ -233,3 +233,62 @@ const results = await trpc.events.searchWithEmbeddings.query({
 3. **Result Limit**: Returns up to 20 events from vector search, combined with all text matches
 4. **Deduplication**: Events found by both methods appear only once in results
 5. **Error Handling**: Gracefully falls back to text-only search if embeddings fail
+
+---
+
+# Update Descriptions Migration
+
+This migration cleans up event descriptions by removing prefixed day/time information and cutting until specific patterns.
+
+## Running the Update Descriptions Migration
+
+```bash
+pnpm tsx src/manual-migrations/update-descriptions.ts
+```
+
+## What it does
+
+The update descriptions migration script:
+
+- Identifies events with descriptions starting with day names (Monday-Sunday)
+- Searches for specific cut patterns:
+  - "+<number>" (e.g., +3, +12234)
+  - "spots left"
+- Removes all content before and including these patterns
+- Preserves the actual description content after the patterns
+- Provides a summary of updated, skipped, and failed events
+- Shows sample updated events for verification
+
+## Pattern Examples
+
+**Before:**
+
+```
+"Tuesday, Oct 79:00am – 3:00pmPTGMTHosted byᵔ▿ᵔᵔ◡ᵔ+4The SR005 cohort is taking the stage..."
+```
+
+**After:**
+
+```
+"The SR005 cohort is taking the stage..."
+```
+
+**Before:**
+
+```
+"Thursday, Oct 94:30pm – 7:30pmPTGMTHosted by⚆◟⚆^⎵^+40/493 spots leftJoin Atlassian to celebrate..."
+```
+
+**After:**
+
+```
+"Join Atlassian to celebrate..."
+```
+
+## Important Notes
+
+- Only processes events where descriptions start with day names
+- Safe to rerun - only updates events that match the pattern
+- Preserves descriptions that don't match the pattern
+- Trims whitespace from cleaned descriptions
+- Run after initial event import for best results
