@@ -129,13 +129,45 @@ export default function Home() {
             />
           </div>
           {/* Events List */}
-          <MapEventsList
-            events={displayEvents}
-            locationFilter={filters.location}
-            totalEventCount={allEvents.length}
-            onClearLocationFilter={clearLocationFilter}
-            isLoading={isLoading}
-          />
+          <AnimatePresence mode="wait">
+            {isSearching ? (
+              <motion.div
+                key="searching"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.3 }}
+              >
+                <MapEventsList
+                  events={[]}
+                  locationFilter={filters.location}
+                  totalEventCount={allEvents.length}
+                  onClearLocationFilter={clearLocationFilter}
+                  isLoading={false}
+                  isAISearching={true}
+                  isAISearchResults={false}
+                />
+              </motion.div>
+            ) : (
+              <motion.div
+                key="results"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.3, delay: 0.1 }}
+              >
+                <MapEventsList
+                  events={displayEvents}
+                  locationFilter={filters.location}
+                  totalEventCount={allEvents.length}
+                  onClearLocationFilter={clearLocationFilter}
+                  isLoading={isLoading}
+                  isAISearching={false}
+                  isAISearchResults={hasActiveSearch}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
       {/* Footer */}

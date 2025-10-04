@@ -28,11 +28,12 @@
 
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MapPin, X, Search } from "lucide-react";
+import { MapPin, X, Search, Sparkles, Crown } from "lucide-react";
 import { DateGroupHeader } from "./DateGroupHeader";
 import { EventCard } from "./EventCard";
 import { LoadingState } from "./LoadingState";
 import { EmptyState } from "./EmptyState";
+import { AISearchLoadingAnimation } from "./AISearchLoadingAnimation";
 import { useEventGrouping } from "~/hooks/useEventGrouping";
 import { Button } from "~/components/ui/button";
 import { Badge } from "~/components/ui/badge";
@@ -52,6 +53,10 @@ interface MapEventsListProps {
   className?: string;
   /** Whether the component is in a loading state */
   isLoading?: boolean;
+  /** Whether AI search is loading */
+  isAISearching?: boolean;
+  /** Whether showing AI search results */
+  isAISearchResults?: boolean;
   /** Total count of events before filtering (for display in filter summary) */
   totalEventCount?: number;
   /** Callback to clear the location filter */
@@ -71,6 +76,7 @@ const containerVariants = {
     opacity: 1,
     transition: {
       staggerChildren: 0.1,
+      delayChildren: 0.2,
     },
   },
 };
@@ -81,7 +87,8 @@ const itemVariants = {
     opacity: 1,
     y: 0,
     transition: {
-      duration: 0.3,
+      duration: 0.4,
+      ease: "easeOut",
     },
   },
 };
@@ -251,7 +258,6 @@ const MapEmptyState = React.memo(function MapEmptyState({
         "flex flex-col items-center justify-center px-4 py-16 text-center",
         className,
       )}
-      variants={itemVariants}
       initial="hidden"
       animate="visible"
     >
@@ -288,10 +294,26 @@ export const MapEventsList = React.memo(function MapEventsList({
   locationFilter,
   className,
   isLoading = false,
+  isAISearching = false,
+  isAISearchResults = false,
   totalEventCount = 0,
   onClearLocationFilter,
 }: MapEventsListProps) {
   const { groupedEvents } = useEventGrouping({ events, isPastEvents: false });
+
+  // Show AI search loading animation
+  if (isAISearching) {
+    return (
+      <div
+        className={cn(
+          "flex h-[400px] flex-col overflow-hidden rounded-lg border border-neutral-200 bg-white shadow-sm lg:h-[600px]",
+          className,
+        )}
+      >
+        <AISearchLoadingAnimation className="flex-1" />
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (
@@ -355,15 +377,40 @@ export const MapEventsList = React.memo(function MapEventsList({
               initial="hidden"
               animate="visible"
             >
-              {groupedEvents.map((event) => (
-                <>
+              {groupedEvents.map((event, index) => {
+                const isBestMatch = isAISearchResults && index === 0;
+
+                return (
                   <motion.div
+                    key={event.id}
                     className="space-y-4"
                     variants={containerVariants}
                   >
+                    {/* Best Match Indicator */}
+                    {isBestMatch && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -10, scale: 0.9 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        transition={{
+                          delay: 0.3,
+                          duration: 0.5,
+                          type: "spring",
+                          stiffness: 200,
+                          damping: 20,
+                        }}
+                        className="mb-2 flex items-center gap-2"
+                      >
+                        <div className="flex items-center gap-2 rounded-full border border-purple-200 bg-gradient-to-r from-purple-50 to-blue-50 px-3 py-1">
+                          <Crown className="h-4 w-4 text-purple-600" />
+                          <span className="text-sm font-semibold text-purple-700">
+                            Best Match
+                          </span>
+                        </div>
+                        <Sparkles className="h-4 w-4 animate-pulse text-purple-500" />
+                      </motion.div>
+                    )}
+
                     <motion.div
-                      key={event.id}
-                      variants={itemVariants}
                       layout
                       whileHover={{ scale: 1.01 }}
                       transition={{
@@ -371,15 +418,29 @@ export const MapEventsList = React.memo(function MapEventsList({
                         stiffness: 300,
                         damping: 30,
                       }}
+                      style={{
+                        originY: 0,
+                      }}
                     >
-                      <EventCard
-                        event={event}
-                        className="border-neutral-200 hover:border-neutral-300"
-                      />
+                      <div
+                        className={cn(
+                          "relative",
+                          isBestMatch && "best-match-glow",
+                        )}
+                      >
+                        <EventCard
+                          event={event}
+                          className={cn(
+                            "border-neutral-200 transition-all duration-300 hover:border-neutral-300",
+                            isBestMatch &&
+                              "border-purple-300 shadow-lg ring-2 shadow-purple-100/50 ring-purple-200/50 hover:border-purple-400",
+                          )}
+                        />
+                      </div>
                     </motion.div>
                   </motion.div>
-                </>
-              ))}
+                );
+              })}
             </motion.div>
           )}
         </AnimatePresence>
