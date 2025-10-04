@@ -167,7 +167,7 @@ export class EventsService {
     }
 
     // Fetch events based on basic filters
-    let prismaEvents = await db.event.findMany({
+    const prismaEvents = await db.event.findMany({
       where: whereClause,
       include: {
         organizers: true,
