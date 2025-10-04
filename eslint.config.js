@@ -35,6 +35,7 @@ export default tseslint.config(
       ],
 
       // Type safety rules - set to warn instead of error
+      "@typescript-eslint/dot-notation": "warn",
       "@typescript-eslint/no-explicit-any": "warn",
       "@typescript-eslint/no-unsafe-assignment": "warn",
       "@typescript-eslint/no-unsafe-member-access": "warn",
