@@ -68,8 +68,8 @@ export function AISearchInput({
           {/* Main Input Row */}
           <div className="flex items-center">
             {/* Search Icon */}
-            <div className="flex items-center pl-8">
-              <Search className="h-6 w-6 text-neutral-400" />
+            <div className="flex items-center pl-4 sm:pl-8">
+              <Search className="h-5 w-5 text-neutral-400 sm:h-6 sm:w-6" />
             </div>
 
             {/* Textarea */}
@@ -83,34 +83,36 @@ export function AISearchInput({
               rows={1}
               style={{ outline: "none", boxShadow: "none" }}
               className={cn(
-                "text-md flex-1 resize-none border-0 bg-transparent px-8 py-8 text-neutral-900 placeholder:text-base placeholder:text-neutral-500",
+                "text-md flex-1 resize-none border-0 bg-transparent text-neutral-900 placeholder:text-neutral-500",
+                "px-3 py-4 placeholder:text-sm sm:px-8 sm:py-8 sm:placeholder:text-base",
                 "outline-none focus:border-0 focus:shadow-none focus:ring-0 focus:outline-none",
-                "max-h-40 min-h-[6rem] overflow-y-hidden",
+                "max-h-40 min-h-[4rem] overflow-y-hidden sm:min-h-[6rem]",
                 isLoading && "opacity-50",
               )}
             />
 
             {/* Submit Button */}
-            <div className="flex items-center p-4">
+            <div className="flex items-center p-2 sm:p-4">
               <Button
                 type="submit"
                 size="icon"
                 disabled={!query.trim() || isLoading}
                 className={cn(
-                  "h-12 w-12 rounded-lg bg-neutral-100 text-neutral-900 hover:bg-neutral-200",
+                  "h-9 w-9 rounded-lg bg-neutral-100 text-neutral-900 hover:bg-neutral-200 sm:h-12 sm:w-12",
                   "disabled:bg-neutral-300 disabled:text-neutral-500 disabled:hover:bg-neutral-300",
                   "transition-all duration-200",
                 )}
               >
                 {isLoading ? (
-                  <Loader2 className="h-6 w-6 animate-spin" />
+                  <Loader2 className="h-4 w-4 animate-spin sm:h-6 sm:w-6" />
                 ) : (
-                  <ArrowUp className="h-6 w-6" />
+                  <ArrowUp className="h-4 w-4 sm:h-6 sm:w-6" />
                 )}
               </Button>
             </div>
           </div>
-          <div className="flex items-center gap-3 border-t border-neutral-100 p-6 pt-4">
+          {/* Dummy filters - hidden on mobile */}
+          <div className="hidden items-center gap-3 border-t border-neutral-100 p-6 pt-4 sm:flex">
             {/* Food Toggle with Coming Soon Badge */}
             <div className="relative">
               <Toggle
