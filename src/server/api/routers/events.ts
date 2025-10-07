@@ -149,6 +149,12 @@ export const eventsRouter = createTRPCRouter({
     )
     .mutation(async ({ input }) => {
       try {
+        console.log(
+          "AI Search at",
+          new Date().toISOString(),
+          "with query",
+          input.prompt,
+        );
         // Extract keywords using AI
         const aiKeywords = await extractSearchKeywords(input.prompt);
 
