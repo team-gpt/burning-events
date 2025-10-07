@@ -61,18 +61,22 @@ export default function Home() {
       <header className="border-neutral-200 bg-white shadow-sm">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
-            <div className="mt-3 sm:mt-6 flex flex-row items-center gap-2 sm:gap-3">
-              <div className="flex h-10 w-10 sm:h-16 sm:w-16 items-center justify-center rounded-lg sm:-ml-24">
+            <div className="mt-3 flex flex-row items-center gap-2 sm:mt-6 sm:gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg sm:-ml-24 sm:h-16 sm:w-16">
                 <Image src={logo} alt="Logo" width={256} height={256} />
               </div>
-              <h1 className="text-base sm:text-xl font-bold">Burning Events</h1>
+              <h1 className="text-base font-bold sm:text-xl">Burning Events</h1>
             </div>
-            <div className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-neutral-600">
+            <div className="flex items-center gap-1 text-xs text-neutral-600 sm:gap-2 sm:text-sm">
               <Calendar className="h-3 w-3 sm:h-4 sm:w-4" />
-              <span className="hidden sm:inline">{displayEvents.length} events found</span>
+              <span className="hidden sm:inline">
+                {displayEvents.length} events found
+              </span>
               <span className="sm:hidden">{displayEvents.length} events</span>
               {hasActiveSearch && (
-                <span className="text-blue-600 hidden sm:inline">(AI search active)</span>
+                <span className="hidden text-blue-600 sm:inline">
+                  (AI search active)
+                </span>
               )}
             </div>
           </div>
